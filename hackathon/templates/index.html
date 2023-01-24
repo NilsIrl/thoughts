@@ -10,16 +10,27 @@
     </head>
     <body>
 
-      <input type="email" id="email" placeholder="Email">
-      <input type="submit" id="submit" value="Submit">
+      <form id="submitEmail">
+        <input type="email" id="email" placeholder="Email">
+        <input type="submit" id="submit-email" value="Submit">
+      </form>
+      <form id="submitCode">
+        <input hidden type="code" id="code" placeholder="Code">
+        <input hidden type='submit' id="submit-code" value="Submit">
+      </form>
 
       <script type="text/javascript">
         console.log("aaaaaa");
+        const emailForm = document.getElementById("submitEmail");
+        const codeForm = document.getElementById("submitCode");
         const email = document.getElementById('email');
-        const submit = document.getElementById('submit');
+        const code = document.getElementById('code');
+        const submitCode = document.getElementById('submit-code');
+        let emailValue;
 
-        submit.addEventListener('click', async () => {
-          const emailValue = email.value;
+        emailForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          emailValue = email.value;
           let resp = await fetch('https://api.vana.com/api/v0/auth/create-login', {
             method: 'POST',
             headers: {
@@ -31,14 +42,28 @@
           })
           if (resp.ok) {
             console.log('success')
+            submitCode.hidden = false;
+            code.hidden = false;
           } else {
             alert(resp.status);
             console.log('error')
           }
-
-
         });
 
+        codeForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const codeValue = code.value;
+          let resp = await fetch('/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              code: codeValue,
+              email: emailValue
+            })
+          });
+        });
       </script>
     </body>
 </html>
