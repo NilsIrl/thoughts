@@ -1,0 +1,44 @@
+<!DOCT
+
+<html>
+    <head>
+      <title>{{ title }}</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+      <link rel="icon" href="{{ url_for('static', filename='archivy.svg')}}" type="image/svg+xml">
+    </head>
+    <body>
+
+      <input type="email" id="email" placeholder="Email">
+      <input type="submit" id="submit" value="Submit">
+
+      <script type="text/javascript">
+        console.log("aaaaaa");
+        const email = document.getElementById('email');
+        const submit = document.getElementById('submit');
+
+        submit.addEventListener('click', async () => {
+          const emailValue = email.value;
+          let resp = await fetch('https://api.vana.com/api/v0/auth/create-login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: emailValue
+            })
+          })
+          if (resp.ok) {
+            console.log('success')
+          } else {
+            alert(resp.status);
+            console.log('error')
+          }
+
+
+        });
+
+      </script>
+    </body>
+</html>
