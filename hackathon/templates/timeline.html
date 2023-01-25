@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}timeline{% endblock %}
+{% block body %}
+    {% for post in timeline %}
+        <div>
+            <h2>{{ post[1] }}</h2>
+            {{ PostContent }}
+        </div>
+    {% endfor %}
+{% endblock %}

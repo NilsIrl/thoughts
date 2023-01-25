@@ -1,6 +1,13 @@
 import os
 
 from flask import Flask, Blueprint, request, render_template
+import subprocess
+
+def render_timeline(post):
+    post_content, author_email = post
+    post_content = subprocess.run(["cmark-gfm"], stdout=subprocess.PIPE, input=post_content).stdout
+    return post_content, author_email
+
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -25,6 +32,20 @@ def create_app(test_config=None):
     @app.route("/")
     def index():
         return render_template("index.html")
+
+    @app.route("/drafting")
+    def drafting():
+        return render_template("drafting.html")
+
+    @app.route("/timeline")
+    def timeline():
+        from . import db
+        db = db.get_db()
+        cur = db.cursor()
+        cur.execute("SELECT PostContent, PosterEmail FROM post ORDER BY PostId")
+        timeline = list(map(render_timeline, cur.fetchall()))
+
+        return render_template("timeline.html", timeline=timeline)
 
     return app
     

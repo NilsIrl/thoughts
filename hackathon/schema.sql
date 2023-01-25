@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS exhibit;
+DROP TABLE IF EXISTS post;
 
 CREATE TABLE user (
     email TEXT UNIQUE NOT NULL,
@@ -9,4 +10,10 @@ CREATE TABLE user (
 CREATE TABLE exhibit (
     exhibit_id INTEGER PRIMARY KEY,
     prompt TEXT UNIQUE NOT NULL
+);
+
+CREATE TABLE post (
+    PostId INTEGER PRIMARY KEY,
+    PostContent TEXT NOT NULL,
+    PosterEmail TEXT NOT NULL REFERENCES user(email)
 );

@@ -12,7 +12,7 @@ VANA_GET_EXHIBIT_URL = "https://api.vana.com/api/v0/account/exhibits"
 def vana_exhibit_url_for_id(id: int) -> str:
     return f"{VANA_GET_EXHIBIT_URL}/thoughts_{id}"
 
-EMAIL_PATTERN = re.compile("@(\w+@\w+.\w+)")
+EMAIL_PATTERN = re.compile(r"@(\w+@\w+.\w+)")
 
 # Abstract class (TM)
 class InvalidPromptError(Exception):
@@ -24,10 +24,16 @@ class NoEmailInvalidPromptError(InvalidPromptError):
 class MultipleEmailInvalidPromptError(InvalidPromptError):
     pass
 
-def get_token(email) -> str:
+def get_token(email: str) -> str:
     db = get_db()
     cur = db.cursor()
     cur.execute("SELECT token FROM user WHERE email = ?", (email,))
+    return cur.fetchone()
+
+def get_email(token: str) -> str:
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT email FROM user WHERE token = ?", (token,))
     return cur.fetchone()
 
 def email_exists(email):
@@ -127,6 +133,20 @@ def generate_images():
 
     return Response(status=204)
 
+
+@bp.post("/post")
+def create_post():
+    token = request.cookies.get("token")
+    email = get_email(token)
+    assert type(email) == str, email
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("INSERT INTO post(PostContent, PostEmail) VALUES (?, ?)", (request.data, email))
+    db.commit()
+
+    # possible return a redirection in case we're dealing with a light client
+    return Response(status=204)
 
 @bp.route("/images")
 def get_images():

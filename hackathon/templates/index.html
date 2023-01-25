@@ -2,12 +2,24 @@
 {% block title %}sign up page{% endblock %}
 {% block body %}
   <form id="submitEmail">
-    <input type="email" id="email" placeholder="Email">
-    <input type="submit" id="submit-email" value="Submit">
+    <div class="field has-addons">
+      <div class="control">
+        <input class="input" type="email" id="email" placeholder="Email">
+      </div>
+      <div class="control">
+        <input id="submitEmailButton" type='submit' class="button" value="Submit">
+      </div>
+    </div>
   </form>
   <form id="submitCode" hidden>
-    <input type="code" id="code" placeholder="Code">
-    <input type='submit' id="submit-code" value="Submit">
+    <div class="field has-addons">
+      <div class="control">
+        <input class="input" type="code" id="code" placeholder="Code">
+      </div>
+      <div class="control">
+        <input class="button" type='submit' id="submit-code" value="Submit">
+      </div>
+    </div>
   </form>
 
   <script type="text/javascript">
@@ -16,11 +28,18 @@
     const email = document.getElementById('email');
     const code = document.getElementById('code');
     const submitCode = document.getElementById('submit-code');
+    const submitEmailButton = document.getElementById("submitEmailButton");
     let emailValue;
 
     emailForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
       emailValue = email.value;
+      // email.disabled = true;
+      submitEmailButton.disabled = true;
+      submitEmailButton.parentElement.classList.add("is-loading");
+      submitEmailButton.classList.remove("is-sucess");
+      email.classList.add("is-loading")
       let resp = await fetch('https://api.vana.com/api/v0/auth/create-login', {
         method: 'POST',
         headers: {
@@ -32,6 +51,9 @@
       })
       if (resp.ok) {
         console.log('success')
+        submitEmailButton.disabled = false;
+        submitEmailButton.parentElement.classList.remove("is-loading");
+        submitEmailButton.classList.add("is-success");
         codeForm.hidden = false;
       } else {
         alert(resp.status);
