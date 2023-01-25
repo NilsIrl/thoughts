@@ -1,24 +1,34 @@
 import os
 
 from flask import Flask, Blueprint, request, render_template
-#from flask_login import LoginManager
 
-app = Flask(__name__)
-app.config.update(
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE='None',
-)
+def create_app(test_config=None):
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='None',
+        DATABASE=os.path.join(app.instance_path, "hackathon.sqlite3")
+    )
+    
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
+    
+    from . import db
+    db.init_app(app)
+    
+    from . import api
+    app.register_blueprint(api.bp)
+    
+    @app.route("/")
+    def index():
+        return render_template("index.html")
 
-app.secret_key = "asdlkfajfsdjffsdlkjdsfkljl"
+    return app
+    
 
-#db = SQLAlchemy(app)
-#login_manager = LoginManager()
-#login_manager.init_app(app)
-
-@app.route("/")
-def index():
-    return render_template("index.html")
 """
 @api_bp.route("/user", methods=["POST"])
 def create_user():

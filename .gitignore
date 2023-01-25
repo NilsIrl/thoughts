@@ -1,2 +1,4 @@
-__pycache__/
-hackathon/__pycache__/
+__pycache__
+/instance
+/hackathon/static/js
+node_modules

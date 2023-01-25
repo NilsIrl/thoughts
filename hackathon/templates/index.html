@@ -1,26 +1,26 @@
-<!DOCT
-
+<!DOCTYPE html>
 <html>
-    <head>
-      <title>{{ title }}</title>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-      <link rel="icon" href="{{ url_for('static', filename='archivy.svg')}}" type="image/svg+xml">
-    </head>
-    <body>
 
-      <form id="submitEmail">
+<head>
+    <title>{{ title }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='archivy.svg')}}" type="image/svg+xml">
+</head>
+
+<body>
+
+    <form id="submitEmail">
         <input type="email" id="email" placeholder="Email">
         <input type="submit" id="submit-email" value="Submit">
-      </form>
-      <form id="submitCode">
-        <input hidden type="code" id="code" placeholder="Code">
-        <input hidden type='submit' id="submit-code" value="Submit">
-      </form>
+    </form>
+    <form id="submitCode" hidden>
+        <input type="code" id="code" placeholder="Code">
+        <input type='submit' id="submit-code" value="Submit">
+    </form>
 
-      <script type="text/javascript">
-        console.log("aaaaaa");
+    <script type="text/javascript">
         const emailForm = document.getElementById("submitEmail");
         const codeForm = document.getElementById("submitCode");
         const email = document.getElementById('email');
@@ -29,41 +29,32 @@
         let emailValue;
 
         emailForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          emailValue = email.value;
-          let resp = await fetch('https://api.vana.com/api/v0/auth/create-login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              email: emailValue
+            e.preventDefault();
+            emailValue = email.value;
+            let resp = await fetch('https://api.vana.com/api/v0/auth/create-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: emailValue
+                })
             })
-          })
-          if (resp.ok) {
-            console.log('success')
-            submitCode.hidden = false;
-            code.hidden = false;
-          } else {
-            alert(resp.status);
-            console.log('error')
-          }
+            if (resp.ok) {
+                console.log('success')
+                codeForm.hidden = false;
+            } else {
+                alert(resp.status);
+                console.log('error')
+            }
         });
 
         codeForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const codeValue = code.value;
-          let resp = await fetch('/register', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              code: codeValue,
-              email: emailValue
-            })
-          });
+            e.preventDefault();
+            const codeValue = code.value;
+            let resp = await fetch(`/api/login?code=${codeValue}&email=${emailValue}`)
         });
-      </script>
-    </body>
+    </script>
+</body>
+
 </html>
