@@ -1,9 +1,12 @@
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS exhibit;
+
 CREATE TABLE user (
-    email UNIQUE TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
     token TEXT NOT NULL
 );
 
 CREATE TABLE exhibit (
     exhibit_id INTEGER PRIMARY KEY,
-    prompt UNIQUE TEXT NOT NULL
+    prompt TEXT UNIQUE NOT NULL
 );
