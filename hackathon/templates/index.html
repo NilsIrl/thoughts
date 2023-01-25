@@ -1,60 +1,48 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+{% block title %}sign up page{% endblock %}
+{% block body %}
+  <form id="submitEmail">
+    <input type="email" id="email" placeholder="Email">
+    <input type="submit" id="submit-email" value="Submit">
+  </form>
+  <form id="submitCode" hidden>
+    <input type="code" id="code" placeholder="Code">
+    <input type='submit' id="submit-code" value="Submit">
+  </form>
 
-<head>
-    <title>{{ title }}</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='archivy.svg')}}" type="image/svg+xml">
-</head>
+  <script type="text/javascript">
+    const emailForm = document.getElementById("submitEmail");
+    const codeForm = document.getElementById("submitCode");
+    const email = document.getElementById('email');
+    const code = document.getElementById('code');
+    const submitCode = document.getElementById('submit-code');
+    let emailValue;
 
-<body>
+    emailForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      emailValue = email.value;
+      let resp = await fetch('https://api.vana.com/api/v0/auth/create-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: emailValue
+        })
+      })
+      if (resp.ok) {
+        console.log('success')
+        codeForm.hidden = false;
+      } else {
+        alert(resp.status);
+        console.log('error')
+      }
+    });
 
-    <form id="submitEmail">
-        <input type="email" id="email" placeholder="Email">
-        <input type="submit" id="submit-email" value="Submit">
-    </form>
-    <form id="submitCode" hidden>
-        <input type="code" id="code" placeholder="Code">
-        <input type='submit' id="submit-code" value="Submit">
-    </form>
-
-    <script type="text/javascript">
-        const emailForm = document.getElementById("submitEmail");
-        const codeForm = document.getElementById("submitCode");
-        const email = document.getElementById('email');
-        const code = document.getElementById('code');
-        const submitCode = document.getElementById('submit-code');
-        let emailValue;
-
-        emailForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            emailValue = email.value;
-            let resp = await fetch('https://api.vana.com/api/v0/auth/create-login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: emailValue
-                })
-            })
-            if (resp.ok) {
-                console.log('success')
-                codeForm.hidden = false;
-            } else {
-                alert(resp.status);
-                console.log('error')
-            }
-        });
-
-        codeForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const codeValue = code.value;
-            let resp = await fetch(`/api/login?code=${codeValue}&email=${emailValue}`)
-        });
-    </script>
-</body>
-
-</html>
+    codeForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const codeValue = code.value;
+      let resp = await fetch(`/api/login?code=${codeValue}&email=${emailValue}`)
+    });
+  </script>
+{% endblock %}
