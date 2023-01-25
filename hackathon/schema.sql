@@ -1,7 +1,9 @@
 CREATE TABLE user (
-    email TEXT NOT NULL,
+    email UNIQUE TEXT NOT NULL,
     token TEXT NOT NULL
 );
 
-CREATE TABLE post (
+CREATE TABLE exhibit (
+    exhibit_id INTEGER PRIMARY KEY,
+    prompt UNIQUE TEXT NOT NULL
 );
