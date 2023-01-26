@@ -17,6 +17,12 @@ def render_timeline():
 
     return render_template("timeline.html", posts=timeline)
 
+def token_exists(token: str) -> bool:
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT COUNT(*) FROM user WHERE token = ?", (token,))
+    return cur.fetchone()[0] > 0
+
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.update(
@@ -38,23 +44,19 @@ def create_app(test_config=None):
     
     @app.route("/")
     def index():
-        token = request.cookies.get('token');
+        token = request.cookies.get('token')
 
-        db = get_db()
-        if token == None:
-            return render_template("index.html")
+        if token != None and token_exists(token):
+            return render_timeline()
         else:
-            cur = db.cursor()
-            cur.execute("SELECT COUNT(*) FROM user WHERE token = ?", (token,))
-            if (cur.fetchone()[0] > 0):
-                return render_timeline()
-            else:
-                resp = make_response(render_template("index.html"))
-                resp.delete_cookie("token")
-                return resp
+            resp = make_response(render_template("index.html"))
+            resp.delete_cookie("token")
+            return resp
 
     @app.route("/post")
     def drafting():
+        token = request.cookies.get('token')
+        
         return render_template("drafting.html")
 
     @app.route("/post2")
