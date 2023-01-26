@@ -2,6 +2,14 @@
 {% block title %}sign up page{% endblock %}
 {% block body %}
 <div id="main">
+    {% if logged_in %}
+    <a href="/post">Create a post</a>
+    <ul>
+        {% for post in posts %}
+        <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
     <div id="landing">
         <h1>Welcome to 'thoughts'</h1>
         <p>A place for you to gather on your day and see what your friends are up to through text updates with auto-generated captions and animated characters.</p>
@@ -20,14 +28,7 @@
         <div id="infobox" class="notification is-danger" hidden>
         </div>
     </div>
-    {% if logged_in %}
-    <a href="/post">Create a post</a>
     {% endif %}
-    <ul>
-        {% for post in posts %}
-        <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
-        {% endfor %}
-    </ul>
 </div>
 
 <script type="text/javascript">
@@ -84,7 +85,7 @@
         if (resp.ok) {
             let parsed_json = await resp.json();
             if (parsed_json["success"]) {
-                document.cookie = `token=${parsed_json["token"]}`;
+                document.cookie = `token=${parsed_json["token"]}; Max-Age=86400`; // 60*60*24 = 86400
                 location.reload();
             } else {
                 code.classList.add("is-danger");

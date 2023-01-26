@@ -2,6 +2,7 @@ import os
 
 from flask import Flask, Blueprint, request, render_template
 import subprocess
+from hackathon.db import init_app, get_db
 
 def render_timeline(post):
     post_content, author_email = post
@@ -23,15 +24,27 @@ def create_app(test_config=None):
     except OSError:
         pass
     
-    from . import db
-    db.init_app(app)
+    init_app(app)
     
     from . import api
     app.register_blueprint(api.bp)
     
     @app.route("/")
     def index():
-        return render_template("index.html")
+        token = request.cookies.get('token');
+
+        db = get_db()
+        if token == None:
+            return render_template("index.html", logged_in=False)
+        else:
+            cur = db.cursor()
+            cur.execute("SELECT COUNT(*) FROM user WHERE token = ?", (token,))
+            if (cur.fetchone()[0] > 0):
+                return render_template("index.html", logged_in=True)
+            else:
+                resp = render_template("index.html", logged_in=False)
+                resp.delete_cookie("token")
+                return resp
 
     @app.route("/drafting")
     def drafting():
@@ -39,8 +52,7 @@ def create_app(test_config=None):
 
     @app.route("/timeline")
     def timeline():
-        from . import db
-        db = db.get_db()
+        db = get_db()
         cur = db.cursor()
         cur.execute("SELECT PostContent, PosterEmail FROM post ORDER BY PostId")
         timeline = list(map(render_timeline, cur.fetchall()))
