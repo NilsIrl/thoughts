@@ -16,9 +16,10 @@ def get_db():
     return g.db
     
 def init_db():
-    db = get_db()
-    with current_app.open_resource("schema.sql") as f:
-        db.executescript(f.read().decode("utf-8"))
+    with current_app.app_context():
+        db = get_db()
+        with current_app.open_resource("schema.sql") as f:
+            db.executescript(f.read().decode("utf-8"))
 
 @click.command('init-db')
 def init_db_command():

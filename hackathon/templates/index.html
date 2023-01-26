@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block title %}sign up page{% endblock %}
 {% block body %}
+    <div id="main">
+      <div id="landing">
+          <h1>Welcome to 'thoughts'</h1>
+          <p>A place for you to gather on your day and see what your friends are up to through text updates with auto-generated captions and animated characters.</p>
+          <p>Login with your <a href="https://vana.com" target="_blank">Vana</a> account:
+
   <form id="submitEmail">
     <div class="field has-addons">
       <div class="control">
@@ -21,6 +27,16 @@
       </div>
     </div>
   </form>
+        </div>
+        {% if logged_in %}
+          <a href="/post">Create a post</a>
+        {% endif %}
+        <ul>
+          {% for post in posts %}
+          <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
+		  {% endfor %}
+        </ul>
+    </div>
 
   <script type="text/javascript">
     const emailForm = document.getElementById("submitEmail");
@@ -60,7 +76,6 @@
         console.log('error')
       }
     });
-
     codeForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const codeValue = code.value;

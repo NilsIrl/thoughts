@@ -2,6 +2,8 @@ import os
 
 from flask import Flask, Blueprint, request, render_template
 import subprocess
+from pathlib import Path
+from hackathon import db
 
 def render_timeline(post):
     post_content, author_email = post
@@ -17,7 +19,10 @@ def create_app(test_config=None):
         SESSION_COOKIE_SAMESITE='None',
         DATABASE=os.path.join(app.instance_path, "hackathon.sqlite3")
     )
-    
+
+    if not Path(app.config.database).exists():
+        db.init_db()
+
     try:
         os.makedirs(app.instance_path)
     except OSError:
@@ -46,9 +51,7 @@ def create_app(test_config=None):
         timeline = list(map(render_timeline, cur.fetchall()))
 
         return render_template("timeline.html", timeline=timeline)
-
     return app
-    
 
 """
 @api_bp.route("/user", methods=["POST"])
