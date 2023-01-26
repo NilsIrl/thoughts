@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link type="text/css" href="https://cdn.jsdelivr.net/water.css@2/out/water.min.css" />
+</head>
+
+<body>
+    <div id="main">
+      <h2>{{ user_name }}</h2>
+      <ul>
+        {% for post in posts %}
+        <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
+      </ul>
+    </div>
+</body>
+</html>

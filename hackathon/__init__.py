@@ -3,7 +3,7 @@ import os
 from flask import Flask, Blueprint, request, render_template
 import subprocess
 from pathlib import Path
-from hackathon import db
+from hackathon.db import init_db
 
 def render_timeline(post):
     post_content, author_email = post
@@ -20,8 +20,9 @@ def create_app(test_config=None):
         DATABASE=os.path.join(app.instance_path, "hackathon.sqlite3")
     )
 
-    if not Path(app.config.database).exists():
-        db.init_db()
+    if not Path(app.config["DATABASE"]).exists():
+        with app.app_context():
+            init_db()
 
     try:
         os.makedirs(app.instance_path)

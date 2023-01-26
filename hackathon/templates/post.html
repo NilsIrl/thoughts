@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link type="text/css" href="https://cdn.jsdelivr.net/water.css@2/out/water.min.css" />
+</head>
+
+<body>
+    <div id="main">
+      <h2>Create post</h2>
+      <div id="bodyCont">
+        <textarea id="post" placeholder="Write your first post"></textarea>
+        <div id="images">
+        </div>
+      </div>
+      <button onclick="genAll()">
+    </div>
+    <script>
+      let text = document.getElementById("post");
+      let parsed = {};
+      function genAll() { gen(text.value); }; 
+      function gen(prompt)
+      {
+        prompt = prompt.replace("I", "{target_token"});
+        fetch('/api/generate', {
+          method: 'POST',
+          headers: {'content-type': 'application/json'},
+          body: JSON.stringify({"text": prompt})
+        })
+      }
+      text.addEventListener('change', async () => {
+        let content = text.value;
+        let matches = // figure out matches here;
+        matches.forEach((m) => {
+          if (!(m in parsed)) {
+              gen(m);
+            }
+        }) 
+      })
+      // figure out way to handle images from server
+    </script>
+</body>
+
+</html>
