@@ -108,8 +108,7 @@ def generate_images():
     
     cur.execute("SELECT COUNT(*) FROM exhibit WHERE prompt = ?", (prompt,))
     if cur.fetchone()[0] > 0:
-        # Prompt already exists
-        pass
+        return Response(status=204)
     
     parsed_prompt, email = parse_prompt(prompt)
     cur.execute("INSERT INTO exhibit(prompt) VALUES (?) RETURNING exhibit_id", (prompt,))
@@ -167,6 +166,7 @@ def get_images():
     # TODO: well we probably want to restrict to only people who can make images
     # of that kind
 
+    # TODO: this 404 is not necessary
     cur.execute("SELECT exhibit_id FROM exhibit WHERE prompt = ?", (prompt,))
     id = cur.fetchone()
     if not id:
