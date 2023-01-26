@@ -1532,14 +1532,3 @@ p {
 	width: 60%;
 	margin: auto;
 }
-#submitEmail {
-	display: flex;
-}
-
-#submitCode[hidden] {
-  display: none;
-}
-
-#submitCode {
-  display: flex;
-}

@@ -17,6 +17,8 @@
                 <input class="input" type="text" id="code" placeholder="Code">
             </div>
         </form>
+        <div id="infobox" class="notification is-danger" hidden>
+        </div>
     </div>
     {% if logged_in %}
     <a href="/post">Create a post</a>
@@ -33,6 +35,7 @@
     const codeForm = document.getElementById("submitCode");
     const email = document.getElementById('email');
     const code = document.getElementById('code');
+    const infobox = document.getElementById('infobox');
     let emailValue;
     
     email.addEventListener('input', e => {
@@ -86,6 +89,8 @@
             } else {
                 code.classList.add("is-danger");
                 code.disabled = false;
+                infobox.innerText = parsed_json["message"];
+                infobox.hidden = false;
             }
         }
 
