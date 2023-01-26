@@ -5,14 +5,14 @@ import subprocess
 from hackathon.db import init_app, get_db
 
 def render_post(post):
-    post_content, author_email = post
+    post_content, author_email, post_time = post
     post_content = subprocess.run(["cmark-gfm"], stdout=subprocess.PIPE, input=post_content).stdout.decode()
-    return post_content, author_email
+    return post_content, author_email, post_time
 
 def render_timeline():
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT PostContent, PosterEmail FROM post ORDER BY PostId")
+    cur.execute("SELECT PostContent, PosterEmail, strftime('%Y-%m-%d %H:%M', PostTime, 'unixepoch') FROM post ORDER BY PostId")
     timeline = list(map(render_post, cur.fetchall()))
 
     return render_template("timeline.html", posts=timeline)

@@ -151,7 +151,7 @@ def create_post():
 
     db = get_db()
     cur = db.cursor()
-    cur.execute("INSERT OR IGNORE INTO post(PostContent, PosterEmail) VALUES (?, ?)", (request.data, email))
+    cur.execute("INSERT INTO post(PostContent, PosterEmail) VALUES (?, ?)", (request.data, email))
     db.commit()
 
     # possible return a redirection in case we're dealing with a light client

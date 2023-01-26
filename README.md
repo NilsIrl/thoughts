@@ -16,7 +16,7 @@ flask --app hackathon --debug run
 * [ ] Remove the gutter and change the font for the text editor
 * [ ] Make it possible to use "I" instead of @ your own email address
 * [ ] Decide whether we want people to follow each other, or be friends with each other, .... (pros of following is that it allows to have granularity where a person can generate stuff about another person when the other can't and then like that we can have private account like on instagram where people can "request" to follow)
-
+* [ ] Consider using basicSetup instead of minimalSetup but without line numbers to benefit from more features
 
 ### "performance"
 

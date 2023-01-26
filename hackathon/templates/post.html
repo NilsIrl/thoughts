@@ -25,6 +25,8 @@
       function genAll() { gen(text.value); }; 
       function gen(prompt)
       {
+        // TODO: common we can do much better than this, we're not even checking
+        // for word boundaries
         prompt = prompt.replace("I", "{target_token"});
         fetch('/api/generate', {
           method: 'POST',
