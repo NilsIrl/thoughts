@@ -2,8 +2,6 @@ import os
 
 from flask import Flask, Blueprint, request, render_template
 import subprocess
-from pathlib import Path
-from hackathon.db import init_db
 
 def render_timeline(post):
     post_content, author_email = post
