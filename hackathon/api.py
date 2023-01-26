@@ -177,6 +177,8 @@ def get_images():
         "authorization": f"Bearer {token}",
     }).json()
 
+    # Even when the exhibit doesn't exist this assertion should pass
+    # This is a BUG(?) with vana's API
     assert exihibit["success"], exihibit
 
     if len(exihibit["urls"]) == 0:
