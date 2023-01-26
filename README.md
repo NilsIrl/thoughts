@@ -1,5 +1,13 @@
 # Thoughts (temporary name)
 
+## Usage
+
+```
+npm i
+npm run build
+flask --app hackathon --debug run
+```
+
 ## TODO
 
 ### features
