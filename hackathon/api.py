@@ -37,6 +37,7 @@ def get_email(token: str) -> str:
     return cur.fetchone()
 
 def email_exists(email):
+    print(email)
     db = get_db()
     cur = db.cursor()
 

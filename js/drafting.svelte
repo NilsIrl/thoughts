@@ -11,7 +11,7 @@
     const imRe2 = /\[\[(.*)\]\]/;
 
     const imagesDiv = document.getElementById("images");
-    function async getImages() {
+    async function getImages() {
       setTimeout(getImages, 60000);
       for (var key in parsedImages) {
         if (!parsedImages[key]) {
@@ -28,12 +28,15 @@
         doc: '',
         extensions: [
             basicSetup,
-            markdown().
-            EditorView.updateListener.of(async (update) => {
+            markdown(),
+            EditorView.updateListener.of((update) => {
                 if (update.docChanged) {
-                    let newCont = update.state.doc.toString());
+                    let sel = update.state.selection.main.from;
+                    let newCont = update.state.doc.toString(); // hacky
+                    if (newCont[sel+1] == ']') return;
                     let generations = newCont.match(imRe);
-                    generations.forEach((gen) => {
+                    if (!generations) return;
+                    generations.forEach(async (gen) => {
                         let genName = gen.slice(2, -2);
                         if (!(genName in parsedImages)) {
                           let resp = await fetch(`/api/images?prompt=${encodeURIComponent(genName)}`, {
