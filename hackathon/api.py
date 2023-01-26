@@ -167,8 +167,11 @@ def get_images():
     # TODO: well we probably want to restrict to only people who can make images
     # of that kind
 
-    cur.execute("SELECT exhibit_id FROM exihibit WHERE prompt = ?", (prompt,))
-    id = cur.fetchone()[0]
+    cur.execute("SELECT exhibit_id FROM exhibit WHERE prompt = ?", (prompt,))
+    id = cur.fetchone()
+    if not id:
+        return Response(status=404)
+    id = id[0]
     assert type(id) == int
 
     _, email = parse_prompt(prompt)

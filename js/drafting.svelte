@@ -3,7 +3,7 @@
     // https://codemirror.net/try/?example=Custom%20completions
 
     //import { basicSetup, EditorState, EditorView } from "@codemirror/basic-setup";
-    import { basicSetup } from "codemirror";
+    import { minimalSetup } from "codemirror";
     import { EditorState } from "@codemirror/state";
     import { EditorView, keymap } from "@codemirror/view";
     import { defaultKeymap } from "@codemirror/commands";
@@ -15,25 +15,34 @@
 
     const imagesDiv = document.getElementById("images");
     async function getImages() {
-      setTimeout(getImages, 60000);
+      setTimeout(getImages, 10000);
+      console.log(parsedImages);
       for (var key in parsedImages) {
         if (!parsedImages[key]) {
           let resp = await fetch(`/api/images?prompt=${encodeURIComponent(key)}`)
           if (resp.ok) {
-            let url = (await resp.json())[0];
-            parsedImages[key] = 1;
-            imagesDiv.innerHTML += `<img src="${url}" />`;
+            let json = await resp.json();
+            if (json.success)
+            {
+              parsedImages[key] = 1;
+              json.urls.forEach((url) => {
+                imagesDiv.innerHTML += `<img src="${url}" />`;
+              }
+             }
           }
         }
       }
     }
+    getImages();
+    let lastProc = Date.now()
     const initialState = EditorState.create({
         doc: '',
         extensions: [
-            basicSetup,
+            minimalSetup,
             markdown(),
             EditorView.updateListener.of((update) => {
-                if (update.docChanged) {
+                if (update.docChanged && Date.now() - lastProc > 5000) {
+                    lastProc = Date.now();
                     let sel = update.state.selection.main.from;
                     let newCont = update.state.doc.toString(); // hacky
                     for (let i = sel; i < newCont.length-1; i += 2) {
@@ -48,11 +57,11 @@
                     if (!generations) return;
                     generations.forEach(async (gen) => {
                         let genName = gen.slice(2, -2);
+                        parsedImages[genName] = 0;
                         if (!(genName in parsedImages)) {
                           let resp = await fetch(`/api/images?prompt=${encodeURIComponent(genName)}`, {
                             method: 'POST',
                           })
-                          parsedImages[genName] = 0;
                           if (!(resp.ok)) {
                             console.log("Error fetching image");
                           }
