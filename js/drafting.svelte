@@ -36,7 +36,14 @@
                 if (update.docChanged) {
                     let sel = update.state.selection.main.from;
                     let newCont = update.state.doc.toString(); // hacky
-                    if (newCont[sel+1] == ']') return;
+                    for (let i = sel; i < newCont.length-1; i += 2) {
+                        if (newCont[i] == '[' && newCont[i+1] == '[') {
+                            break;
+                        }
+                        if (newCont[i] == ']' && newCont[i+1] == ']') {
+                            return;
+                        }
+                    }
                     let generations = newCont.match(imRe);
                     if (!generations) return;
                     generations.forEach(async (gen) => {
@@ -46,7 +53,7 @@
                             method: 'POST',
                           })
                           parsedImages[genName] = 0;
-                          if (resp.ok) {
+                          if (!(resp.ok)) {
                             console.log("Error fetching image");
                           }
                         }
@@ -59,7 +66,7 @@
 
     const view = new EditorView({
         parent: document.getElementById("editor"),
-        extensions: [basicSetup, markdown()],
+        state: initialState,
         doc: '',
     });
 

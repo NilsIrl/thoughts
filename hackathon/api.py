@@ -28,7 +28,7 @@ def get_token(email: str) -> str:
     db = get_db()
     cur = db.cursor()
     cur.execute("SELECT token FROM user WHERE email = ?", (email,))
-    return cur.fetchone()
+    return cur.fetchone()[0]
 
 def get_email(token: str) -> str:
     db = get_db()
@@ -44,7 +44,7 @@ def email_exists(email):
     cur.execute("SELECT COUNT(*) FROM user WHERE email = ?", (email,))
     count = cur.fetchone()[0]
 
-    return count > 1
+    return count >= 1
 
 # returns the prompt followed by the email of the person in question
 # parse_prompt replaces the uses of the person in the prompt
@@ -52,6 +52,7 @@ def email_exists(email):
 # NoEmailInvalidPromptError in cases where there are no emailed @ed in the prompt (i.e. probably mistyped the email address)
 # MultipleEmailInvalidPromptError when there are multiple different emails being used
 def parse_prompt(prompt: str) -> tuple[str, str]:
+
     email_matches = filter(lambda email_match: email_exists(email_match.group(1)), EMAIL_PATTERN.finditer(prompt))
     try:
         first_email = next(email_matches)
@@ -69,7 +70,7 @@ def parse_prompt(prompt: str) -> tuple[str, str]:
 
     final_prompt += prompt[end_of_previous:]
 
-    return final_prompt, first_email
+    return final_prompt, first_email.group(1)
 
 @bp.route('/login')
 def login():
@@ -112,15 +113,16 @@ def generate_images():
     
     parsed_prompt, email = parse_prompt(prompt)
     cur.execute("INSERT INTO exhibit(prompt) VALUES (?) RETURNING exhibit_id", (prompt,))
-    exhibit_id = cur.fetchone()
+    exhibit_id = cur.fetchone()[0]
 
     # this should probably be a tuple
     print(exhibit_id)
-    assert type(exhibit_id) == str
+    assert type(exhibit_id) == int
 
     db.commit()
 
     token = get_token(email)
+    print(token)
     # TODO URGENT: JWT could be invalid or expired
     response = requests.post(VANA_GENERATION_URL, 
         headers={

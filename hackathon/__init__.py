@@ -53,9 +53,13 @@ def create_app(test_config=None):
                 resp.delete_cookie("token")
                 return resp
 
-    @app.route("/drafting")
+    @app.route("/post")
     def drafting():
         return render_template("drafting.html")
+
+    @app.route("/post2")
+    def post2():
+        return render_template("post.html")
 
     return app
 
