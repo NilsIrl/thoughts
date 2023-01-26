@@ -17,7 +17,7 @@ flask --app hackathon --debug run
 
 ### "performance"
 
-* [ ]: normalise the prompts (to prevent generating the same prompt twice basically) This could be done by using the tokenizer used by stable diffusion like that it's only when it's literally exactly the same thing (although we don't know how vana does its tokenizing especially with the {target_token} thing)o
+* [ ] normalise the prompts (to prevent generating the same prompt twice basically) This could be done by using the tokenizer used by stable diffusion like that it's only when it's literally exactly the same thing (although we don't know how vana does its tokenizing especially with the {target_token} thing)o
 
 ## feedback to Vana
 
