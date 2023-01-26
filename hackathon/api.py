@@ -140,6 +140,8 @@ def generate_images():
 @bp.post("/post")
 def create_post():
     token = request.cookies.get("token")
+    assert token != None
+    
     email = get_email(token)
     assert type(email) == str, email
 
