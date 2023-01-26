@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, Blueprint, request, render_template
+from flask import Flask, Blueprint, make_response, request, render_template
 import subprocess
 from hackathon.db import init_app, get_db
 
@@ -49,7 +49,7 @@ def create_app(test_config=None):
             if (cur.fetchone()[0] > 0):
                 return render_timeline()
             else:
-                resp = render_template("index.html")
+                resp = make_response(render_template("index.html"))
                 resp.delete_cookie("token")
                 return resp
 
