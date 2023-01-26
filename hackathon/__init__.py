@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, Blueprint, make_response, request, render_template
+from flask import Flask, Blueprint, make_response, redirect, request, render_template
 import subprocess
 from hackathon.db import init_app, get_db
 
@@ -56,8 +56,10 @@ def create_app(test_config=None):
     @app.route("/post")
     def drafting():
         token = request.cookies.get('token')
-        
-        return render_template("drafting.html")
+        if token != None and token_exists(token):
+            return render_template("drafting.html")
+        else:
+            return redirect("/")
 
     @app.route("/post2")
     def post2():
