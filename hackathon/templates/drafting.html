@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block title %}new post{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='js/drafting.css') }}">
+{% endblock %}
 {% block body %}
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='js/drafting.css') }}">
     <div id="editor"></div>
 	<div id="images"></div>
     <script src="{{ url_for('static', filename='js/drafting.js') }}"></script>

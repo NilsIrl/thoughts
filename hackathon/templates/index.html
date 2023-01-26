@@ -8,23 +8,13 @@
         <p>Login with your <a href="https://vana.com" target="_blank">Vana</a> account:</p>
         
         <form id="submitEmail">
-            <div class="field has-addons">
-                <div class="control">
-                    <input class="input" type="email" id="email" placeholder="Email">
-                </div>
-                <div class="control">
-                    <input id="submitEmailButton" type='submit' class="button" value="Submit">
-                </div>
+            <div class="control">
+                <input class="input" type="email" id="email" placeholder="Email">
             </div>
         </form>
         <form id="submitCode" hidden>
-            <div class="field has-addons">
-                <div class="control">
-                    <input class="input" type="code" id="code" placeholder="Code">
-                </div>
-                <div class="control">
-                    <input class="button" type='submit' id="submit-code" value="Submit">
-                </div>
+            <div class="control">
+                <input class="input" type="text" id="code" placeholder="Code">
             </div>
         </form>
     </div>
@@ -43,19 +33,20 @@
     const codeForm = document.getElementById("submitCode");
     const email = document.getElementById('email');
     const code = document.getElementById('code');
-    const submitCode = document.getElementById('submit-code');
-    const submitEmailButton = document.getElementById("submitEmailButton");
     let emailValue;
     
+    email.addEventListener('input', e => {
+        codeForm.hidden = true;
+        email.classList.remove("is-success");
+        email.classList.remove("is-danger");
+    });
+
     emailForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         emailValue = email.value;
-        // email.disabled = true;
-        submitEmailButton.disabled = true;
-        submitEmailButton.parentElement.classList.add("is-loading");
-        submitEmailButton.classList.remove("is-sucess");
-        email.classList.add("is-loading")
+        email.parentElement.classList.add("is-loading")
+        email.disabled = true;
         let resp = await fetch('https://api.vana.com/api/v0/auth/create-login', {
             method: 'POST',
             headers: {
@@ -65,21 +56,39 @@
                 email: emailValue
             })
         })
+        email.parentElement.classList.remove("is-loading");
+        email.disabled = false;
         if (resp.ok) {
             console.log('success')
-            submitEmailButton.disabled = false;
-            submitEmailButton.parentElement.classList.remove("is-loading");
-            submitEmailButton.classList.add("is-success");
+            email.classList.add("is-success");
             codeForm.hidden = false;
         } else {
-            alert(resp.status);
+            email.classList.add("is-danger");
             console.log('error')
         }
     });
     codeForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const codeValue = code.value;
-        let resp = await fetch(`/api/login?code=${codeValue}&email=${emailValue}`)
+
+        code.disabled = true;
+        code.parentElement.classList.add("is-loading");
+
+        let resp = await fetch(`/api/login?code=${codeValue}&email=${emailValue}`);
+
+        code.parentElement.classList.remove("is-loading");
+
+        if (resp.ok) {
+            let parsed_json = await resp.json();
+            if (parsed_json["success"]) {
+                document.cookie = `token=${parsed_json["token"]}`;
+                location.reload();
+            } else {
+                code.classList.add("is-danger");
+                code.disabled = false;
+            }
+        }
+
     });
 </script>
 {% endblock %}

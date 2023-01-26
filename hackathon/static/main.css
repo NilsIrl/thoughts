@@ -1535,3 +1535,11 @@ p {
 #submitEmail {
 	display: flex;
 }
+
+#submitCode[hidden] {
+  display: none;
+}
+
+#submitCode {
+  display: flex;
+}
