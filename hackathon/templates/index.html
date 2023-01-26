@@ -2,14 +2,6 @@
 {% block title %}sign up page{% endblock %}
 {% block body %}
 <div id="main">
-    {% if logged_in %}
-    <a href="/post">Create a post</a>
-    <ul>
-        {% for post in posts %}
-        <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
-        {% endfor %}
-    </ul>
-    {% else %}
     <div id="landing">
         <h1>Welcome to 'thoughts'</h1>
         <p>A place for you to gather on your day and see what your friends are up to through text updates with auto-generated captions and animated characters.</p>
@@ -28,7 +20,6 @@
         <div id="infobox" class="notification is-danger" hidden>
         </div>
     </div>
-    {% endif %}
 </div>
 
 <script type="text/javascript">

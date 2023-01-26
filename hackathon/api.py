@@ -34,7 +34,7 @@ def get_email(token: str) -> str:
     db = get_db()
     cur = db.cursor()
     cur.execute("SELECT email FROM user WHERE token = ?", (token,))
-    return cur.fetchone()
+    return cur.fetchone()[0]
 
 def email_exists(email):
     print(email)
@@ -139,15 +139,17 @@ def generate_images():
 
 @bp.post("/post")
 def create_post():
+    # necessary otherwise request.data may be empty
+    assert request.content_type == "text/markdown"
+
     token = request.cookies.get("token")
     assert token != None
     
     email = get_email(token)
-    assert type(email) == str, email
 
     db = get_db()
     cur = db.cursor()
-    cur.execute("INSERT INTO post(PostContent, PostEmail) VALUES (?, ?)", (request.data, email))
+    cur.execute("INSERT INTO post(PostContent, PosterEmail) VALUES (?, ?)", (request.data, email))
     db.commit()
 
     # possible return a redirection in case we're dealing with a light client

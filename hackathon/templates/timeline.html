@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 {% block title %}timeline{% endblock %}
 {% block body %}
-    {% for post in timeline %}
-        <div>
-            <h2>{{ post[1] }}</h2>
-            {{ PostContent }}
-        </div>
+    <a href="/post">Create a post</a>
+    {% for post in posts %}
+        <article class="message">
+            <div class="message-header">
+                {{ post[1] }}
+            </div>
+            <div class="message-body">
+                {{ post[0] | safe }}
+            </div>
+        </article>
     {% endfor %}
 {% endblock %}

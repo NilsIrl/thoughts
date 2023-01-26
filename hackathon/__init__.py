@@ -4,11 +4,18 @@ from flask import Flask, Blueprint, request, render_template
 import subprocess
 from hackathon.db import init_app, get_db
 
-def render_timeline(post):
+def render_post(post):
     post_content, author_email = post
-    post_content = subprocess.run(["cmark-gfm"], stdout=subprocess.PIPE, input=post_content).stdout
+    post_content = subprocess.run(["cmark-gfm"], stdout=subprocess.PIPE, input=post_content).stdout.decode()
     return post_content, author_email
 
+def render_timeline():
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT PostContent, PosterEmail FROM post ORDER BY PostId")
+    timeline = list(map(render_post, cur.fetchall()))
+
+    return render_template("timeline.html", posts=timeline)
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -35,14 +42,14 @@ def create_app(test_config=None):
 
         db = get_db()
         if token == None:
-            return render_template("index.html", logged_in=False)
+            return render_template("index.html")
         else:
             cur = db.cursor()
             cur.execute("SELECT COUNT(*) FROM user WHERE token = ?", (token,))
             if (cur.fetchone()[0] > 0):
-                return render_template("index.html", logged_in=True)
+                return render_timeline()
             else:
-                resp = render_template("index.html", logged_in=False)
+                resp = render_template("index.html")
                 resp.delete_cookie("token")
                 return resp
 
@@ -50,14 +57,6 @@ def create_app(test_config=None):
     def drafting():
         return render_template("drafting.html")
 
-    @app.route("/timeline")
-    def timeline():
-        db = get_db()
-        cur = db.cursor()
-        cur.execute("SELECT PostContent, PosterEmail FROM post ORDER BY PostId")
-        timeline = list(map(render_timeline, cur.fetchall()))
-
-        return render_template("timeline.html", timeline=timeline)
     return app
 
 """
