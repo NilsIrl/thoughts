@@ -182,3 +182,16 @@ def get_images():
 
     return jsonify(exihibit)
     
+@bp.get("/users")
+def get_users():
+    """
+    returns the list of users with email starting with startsWith query
+    parameter or all users, this is to be used for email address completion
+    inside of the editor
+    """
+
+    startsWith = request.args.get("startsWith", "")
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT email FROM user WHERE instr(email, ?) == 1", (startsWith,))
+    return jsonify(list(map(lambda x: x[0], cur.fetchall())))

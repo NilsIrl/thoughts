@@ -1,4 +1,7 @@
 <script lang="ts">
+    // TODO: we can do custom completion for usernames
+    // https://codemirror.net/try/?example=Custom%20completions
+
     //import { basicSetup, EditorState, EditorView } from "@codemirror/basic-setup";
     import { basicSetup } from "codemirror";
     import { EditorState } from "@codemirror/state";
@@ -56,8 +59,10 @@
 
     const view = new EditorView({
         parent: document.getElementById("editor"),
-        state: initialState,
+        extensions: [basicSetup, markdown()],
+        doc: '',
     });
 
     console.log("WTF");
 </script>
+<!-- <div id="editor"></div> -->
