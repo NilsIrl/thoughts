@@ -1,44 +1,44 @@
 {% extends "base.html" %}
 {% block title %}sign up page{% endblock %}
 {% block body %}
-    <div id="main">
-      <div id="landing">
-          <h1>Welcome to 'thoughts'</h1>
-          <p>A place for you to gather on your day and see what your friends are up to through text updates with auto-generated captions and animated characters.</p>
-          <p>Login with your <a href="https://vana.com" target="_blank">Vana</a> account:
+<div id="main">
+    <div id="landing">
+        <h1>Welcome to 'thoughts'</h1>
+        <p>A place for you to gather on your day and see what your friends are up to through text updates with auto-generated captions and animated characters.</p>
+        <p>Login with your <a href="https://vana.com" target="_blank">Vana</a> account:</p>
+        
+        <form id="submitEmail">
+            <div class="field has-addons">
+                <div class="control">
+                    <input class="input" type="email" id="email" placeholder="Email">
+                </div>
+                <div class="control">
+                    <input id="submitEmailButton" type='submit' class="button" value="Submit">
+                </div>
+            </div>
+        </form>
+        <form id="submitCode" hidden>
+            <div class="field has-addons">
+                <div class="control">
+                    <input class="input" type="code" id="code" placeholder="Code">
+                </div>
+                <div class="control">
+                    <input class="button" type='submit' id="submit-code" value="Submit">
+                </div>
+            </div>
+        </form>
+    </div>
+    {% if logged_in %}
+    <a href="/post">Create a post</a>
+    {% endif %}
+    <ul>
+        {% for post in posts %}
+        <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
 
-  <form id="submitEmail">
-    <div class="field has-addons">
-      <div class="control">
-        <input class="input" type="email" id="email" placeholder="Email">
-      </div>
-      <div class="control">
-        <input id="submitEmailButton" type='submit' class="button" value="Submit">
-      </div>
-    </div>
-  </form>
-  <form id="submitCode" hidden>
-    <div class="field has-addons">
-      <div class="control">
-        <input class="input" type="code" id="code" placeholder="Code">
-      </div>
-      <div class="control">
-        <input class="button" type='submit' id="submit-code" value="Submit">
-      </div>
-    </div>
-  </form>
-        </div>
-        {% if logged_in %}
-          <a href="/post">Create a post</a>
-        {% endif %}
-        <ul>
-          {% for post in posts %}
-          <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
-		  {% endfor %}
-        </ul>
-    </div>
-
-  <script type="text/javascript">
+<script type="text/javascript">
     const emailForm = document.getElementById("submitEmail");
     const codeForm = document.getElementById("submitCode");
     const email = document.getElementById('email');
@@ -46,40 +46,40 @@
     const submitCode = document.getElementById('submit-code');
     const submitEmailButton = document.getElementById("submitEmailButton");
     let emailValue;
-
+    
     emailForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      emailValue = email.value;
-      // email.disabled = true;
-      submitEmailButton.disabled = true;
-      submitEmailButton.parentElement.classList.add("is-loading");
-      submitEmailButton.classList.remove("is-sucess");
-      email.classList.add("is-loading")
-      let resp = await fetch('https://api.vana.com/api/v0/auth/create-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: emailValue
+        e.preventDefault();
+        
+        emailValue = email.value;
+        // email.disabled = true;
+        submitEmailButton.disabled = true;
+        submitEmailButton.parentElement.classList.add("is-loading");
+        submitEmailButton.classList.remove("is-sucess");
+        email.classList.add("is-loading")
+        let resp = await fetch('https://api.vana.com/api/v0/auth/create-login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: emailValue
+            })
         })
-      })
-      if (resp.ok) {
-        console.log('success')
-        submitEmailButton.disabled = false;
-        submitEmailButton.parentElement.classList.remove("is-loading");
-        submitEmailButton.classList.add("is-success");
-        codeForm.hidden = false;
-      } else {
-        alert(resp.status);
-        console.log('error')
-      }
+        if (resp.ok) {
+            console.log('success')
+            submitEmailButton.disabled = false;
+            submitEmailButton.parentElement.classList.remove("is-loading");
+            submitEmailButton.classList.add("is-success");
+            codeForm.hidden = false;
+        } else {
+            alert(resp.status);
+            console.log('error')
+        }
     });
     codeForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const codeValue = code.value;
-      let resp = await fetch(`/api/login?code=${codeValue}&email=${emailValue}`)
+        e.preventDefault();
+        const codeValue = code.value;
+        let resp = await fetch(`/api/login?code=${codeValue}&email=${emailValue}`)
     });
-  </script>
+</script>
 {% endblock %}
