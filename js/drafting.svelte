@@ -10,7 +10,7 @@
     import { markdown } from "@codemirror/lang-markdown";
 
     let parsedImages = {}
-    const imRe = /\[\[.*\]\]/g;
+    const imRe = /\[\[(.*?)\]\]/g;
     const imRe2 = /\[\[(.*)\]\]/;
 
     const imagesDiv = document.getElementById("images");
@@ -25,10 +25,9 @@
             if (json.success)
             {
               parsedImages[key] = 1;
-              json.urls.forEach((url) => {
-                imagesDiv.innerHTML += `<img src="${url}" />`;
-              }
-             }
+              json.urls.forEach((url) => {                               imagesDiv.innerHTML += `<img src="${url}" />`;
+              })
+            }
           }
         }
       }
@@ -41,7 +40,7 @@
             minimalSetup,
             markdown(),
             EditorView.updateListener.of((update) => {
-                if (update.docChanged && Date.now() - lastProc > 5000) {
+                if (update.docChanged && Date.now() - lastProc > 1000) {
                     lastProc = Date.now();
                     let sel = update.state.selection.main.from;
                     let newCont = update.state.doc.toString(); // hacky
@@ -57,8 +56,8 @@
                     if (!generations) return;
                     generations.forEach(async (gen) => {
                         let genName = gen.slice(2, -2);
-                        parsedImages[genName] = 0;
                         if (!(genName in parsedImages)) {
+                          parsedImages[genName] = 0;
                           let resp = await fetch(`/api/images?prompt=${encodeURIComponent(genName)}`, {
                             method: 'POST',
                           })
@@ -79,6 +78,23 @@
         doc: '',
     });
 
-    console.log("WTF");
+
+    let submit = document.getElementById("submit");
+    let input = document.getElementById("post-content");
+    submit.addEventListener("click", async () => {
+        let cmv = view.state.doc.toString();
+        let resp = await fetch("/api/posts", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                content: cmv,
+            }),
+        });
+        if (resp.ok) {
+            window.location.href = `/`;
+        }
+    });
 </script>
 <!-- <div id="editor"></div> -->

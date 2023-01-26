@@ -9,7 +9,7 @@ html, body {
 }
 #main {
 	width: 60%;
-	margin: 10% auto;
+	margin: 5% auto;
 }
 #bodyCont textarea {
 	width: 100%;
@@ -27,5 +27,6 @@ p {
 }
 
 #editor {
-  width: 60%;
+	background: #F7EFE5;
+	padding: 60px;
 }

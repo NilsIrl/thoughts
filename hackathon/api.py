@@ -202,3 +202,15 @@ def get_users():
     cur = db.cursor()
     cur.execute("SELECT email FROM user WHERE instr(email, ?) == 1", (startsWith,))
     return jsonify(list(map(lambda x: x[0], cur.fetchall())))
+
+@bp.post("/posts")
+def save_post():
+    content = request.json.get("content")
+    if content == None:
+        return Response(status=400)
+    db = get_db()
+    cur = db.cursor()
+    email = get_email(request.cookies.get("token"))
+    cur.execute("INSERT INTO post(PostContent, PosterEmail) VALUES (?, ?)", (content, email))
+    db.commit()
+    return Response(status=200)
