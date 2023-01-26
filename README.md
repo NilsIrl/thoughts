@@ -5,6 +5,7 @@
 ```
 npm i
 npm run build
+flask --app hackathon init-db
 flask --app hackathon --debug run
 ```
 
