@@ -20,10 +20,6 @@ def create_app(test_config=None):
         DATABASE=os.path.join(app.instance_path, "hackathon.sqlite3")
     )
 
-    if not Path(app.config["DATABASE"]).exists():
-        with app.app_context():
-            init_db()
-
     try:
         os.makedirs(app.instance_path)
     except OSError:

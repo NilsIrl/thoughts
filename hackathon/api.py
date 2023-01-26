@@ -73,6 +73,8 @@ def parse_prompt(prompt: str) -> tuple[str, str]:
 
 @bp.route('/login')
 def login():
+    # TODO NOT-URGENT NOT-IMPORTANT: we may want to normalise the email
+    # addresses to prevent duplicates (case sensitivity (or lack thereof))
     db = get_db()
     email = request.args.get("email")
     code = request.args.get("code")
@@ -84,7 +86,7 @@ def login():
     login_json_response = login_response.json()
     if login_json_response["success"]:
         token = login_json_response["token"]
-        db.execute("INSERT INTO user(email, token) VALUES (?, ?)", (email, token))
+        db.execute("INSERT OR REPLACE INTO user(email, token) VALUES (?, ?)", (email, token))
         db.commit()
     
     return jsonify(login_json_response)
