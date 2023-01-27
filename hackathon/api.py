@@ -67,6 +67,8 @@ def login():
     if login_json_response["success"]:
         token = login_json_response["token"]
         db.execute("INSERT OR REPLACE INTO user(email, token) VALUES (?, ?)", (email, token))
+
+        db.execute("INSERT OR REPLACE INTO follow(follower, followee) VALUES (?, ?)", (email, email))
         db.commit()
     
     return jsonify(login_json_response)
