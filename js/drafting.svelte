@@ -14,47 +14,44 @@
 
     const images = document.getElementById("images");
     async function getImages() {
-        setTimeout(getImages, 10000);
-        console.log(parsedImages);
-        for (var key in parsedImages) {
-            if (!parsedImages[key]) {
-                let resp = await fetch(
-                    `/api/images?prompt=${encodeURIComponent(key)}`
-                );
-                if (resp.ok) {
-                    let json = await resp.json();
-                    if (json.success) {
-                        parsedImages[key] = 1;
-                        let current = view.state.doc.toString().indexOf(key);
-                        let subDiv = document.createElement("div");
-                        json.urls.forEach((url) => {
-                            let img = document.createElement("img");
-                            img.src = url;
-                            subDiv.appendChild(img);
-                            img.addEventListener("click", (e) => {
-                                let pos = view.state.doc
-                                    .toString()
-                                    .indexOf(key);
-                                let tr = view.state.update({
-                                    changes: {
-                                        from: pos,
-                                        to: pos + key.length + 2,
-                                        insert: `\n![${key}](${url})\n`,
-                                    },
-                                });
-                                view.dispatch(tr);
-                                subDiv.children.forEach((otherImg) => {
-                                    if (otherImg != img) {
-                                        otherImg.remove();
-                                    }
-                                });
-                            });
-                            images.appendChild(subDiv);
-                        });
+      setTimeout(getImages, 10000);
+      for (var key in parsedImages) {
+        if (!parsedImages[key]) {
+          let resp = await fetch(`/api/images?prompt=${encodeURIComponent(key)}`)
+          if (resp.ok) {
+            let json = await resp.json();
+            if (json.success)
+            {
+              parsedImages[key] = 1;
+              let current = view.state.doc.toString().indexOf(key);
+              let subDiv = document.createElement("div");
+              json.urls.forEach((url) => {
+                let img = document.createElement("img");
+                img.src = url;
+                subDiv.appendChild(img);
+                img.addEventListener("click", (e) => {
+                  let pos = view.state.doc.toString().indexOf(key) + key.length + 2;
+                  let insertion = `\n![${key}](${url})\n`;
+                  let tr = view.state.update({
+                    changes: {
+                      from: pos,
+                      insert: insertion,
+                    },
+                  });
+                  view.dispatch(tr);
+                  let otherImgs = subDiv.children;
+                  for(let i = 0; i < otherImgs.length; i++) {
+                    if (otherImgs[i] != img) {
+                        otherImgs[i].remove();
                     }
-                }
+                  }
+                });
+                images.appendChild(subDiv);
+              })
             }
+          }
         }
+      }
     }
     getImages();
     let lastProc = Date.now();
