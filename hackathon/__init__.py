@@ -95,7 +95,7 @@ def create_app(test_config=None):
         return render_template("user.html", email=email, posts=timeline, logged_in=logged_in(), follows=follows(email), followers=followers, following=following)
 
     @app.route("/search")
-    def post2():
+    def search():
         search_query = "%" + request.args.get("search", "") + "%"
         db = get_db()
         cur = db.cursor()
