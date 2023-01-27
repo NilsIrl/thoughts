@@ -14,62 +14,8 @@
 
     const images = document.getElementById("images");
     let button = document.getElementById("loading");
-    /*
-    async function getImages() {
-      let anyLeft = 0;
-      setTimeout(getImages, 10000);
-      for (var key in parsedImages) {
-        if (!parsedImages[key]) {
-          let resp = await fetch(`/api/images?prompt=${encodeURIComponent(key)}`)
-          if (resp.ok) {
-            let json = await resp.json();
-            if (json.success)
-            {
-              parsedImages[key] = 1;
-              let current = view.state.doc.toString().indexOf(key);
-              let subDiv = document.createElement("div");
-              json.urls.forEach((url) => {
-                let img = document.createElement("img");
-                img.src = url;
-                subDiv.appendChild(img);
-                img.addEventListener("click", (e) => {
-                  let pos = view.state.doc.toString().indexOf(key) + key.length + 2;
-                  let insertion = `\n![${key}](${url})\n`;
-                  let tr = view.state.update({
-                    changes: {
-                      from: pos,
-                      insert: insertion,
-                    },
-                  });
-                  view.dispatch(tr);
-                  let otherImgs = subDiv.children;
-                  for(let i = 0; i < otherImgs.length; i++) {
-                    console.log(otherImgs[i].src);
-                    if (otherImgs[i].src != img.src) {
-                        otherImgs[i].remove();
-                    }
-                  }
-
-                  otherImgs = subDiv.children;
-                  for(let i = 0; i < otherImgs.length; i++) {
-                    console.log(otherImgs[i].src);
-                    if (otherImgs[i].src != img.src) {
-                        otherImgs[i].remove();
-                    }
-                  }
-                });
-                images.appendChild(subDiv);
-              })
-            }
-          }
-        }
-        else anyLeft = 1;
-      }
-      if (!anyLeft && parsedImages.length) button.style.display = "none";
-    }
-    getImages();
-    */
     let lastProc = Date.now();
+
     const initialState = EditorState.create({
         doc: "",
         extensions: [
@@ -160,7 +106,6 @@
         parent: document.getElementById("editor"),
         state: initialState,
         doc: "",
-        lineWrapping: true
     });
 
     let submit = document.getElementById("submit");
