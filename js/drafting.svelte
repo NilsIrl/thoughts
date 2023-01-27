@@ -110,8 +110,7 @@
                                 console.log(json);
                                 let current = view.state.doc.toString().indexOf(genName);
                                 let subDiv = document.createElement("div");
-                                json.data.forEach((imD) => {
-                                  url = imD.url;
+                                json.forEach((url) => {
                                   let img = document.createElement("img");
                                   img.src = url;
                                   subDiv.appendChild(img);

@@ -3,11 +3,14 @@ import requests
 import re
 from hackathon.db import get_db
 from hackathon.utils import get_token, get_email, email_exists
+import time
+import itertools
 
 bp=Blueprint("api", __name__, url_prefix="/api")
 
 VANA_LOGIN_URL = "https://api.vana.com/api/v0/auth/login"
-VANA_GENERATION_URL = "https://api.vana.com/api/v0/images/generations"
+VANA_GENERATION_URL_SYNC = "https://api.vana.com/api/v0/images/generations"
+VANA_GENERATION_URL_ASYNC = "https://api.vana.com/api/v0/jobs/text-to-image"
 VANA_GET_EXHIBIT_URL = "https://api.vana.com/api/v0/account/exhibits"
 
 def vana_exhibit_url_for_id(id: int) -> str:
@@ -78,53 +81,69 @@ def user_exists():
     user_email = request.args.get("email")
     return jsonify(email_exists(user_email))
 
-
+# Synchronous API exposed to browser
+# It may be implemented using the vana sync or async API
 @bp.route("/images", methods = ["POST"])
 def generate_images():
     db = get_db()
     cur = db.cursor()
     prompt = request.args.get("prompt")
+
     assert prompt != None
-    authorization_header = request.headers.get("authorization")
     
     cur.execute("SELECT COUNT(*) FROM exhibit WHERE prompt = ?", (prompt,))
     if cur.fetchone()[0] > 0:
-        return Response(status=204)
+        while True:
+            print("polling database for images for prompt:", prompt)
+            cur.execute("SELECT imageUrl FROM image JOIN exhibit ON exhibit_id = ExhibitId WHERE prompt = ?", (prompt,))
+            image_urls = cur.fetchall()
+            if len(image_urls) > 0:
+                return jsonify(list(map(lambda row: row[0], image_urls)))
+            # TODO IMPORTANT does this block?
+            time.sleep(5)
     
+    # TODO actually do this properly REGEX WORD BOUNDARIES
+    """
     user_email = get_email(request.cookies.get("token"))
     prompt = prompt.replace(" I ", f" @{user_email} ")
     if prompt.startswith("I "):
         prompt = "@" + user_email + prompt[1:]
+    """
+
+    # TODO: concurrency, an exhibit could have been introduced here
+
     parsed_prompt, email = parse_prompt(prompt)
     cur.execute("INSERT INTO exhibit(prompt) VALUES (?) RETURNING exhibit_id", (prompt,))
     exhibit_id = cur.fetchone()[0]
-
-    # this should probably be a tuple
-    print(exhibit_id)
-    assert type(exhibit_id) == int
-
     db.commit()
 
     token = get_token(email)
+
     # TODO URGENT: JWT could be invalid or expired
-    done = False
-    while not done:
-        try:
-            response = requests.post(VANA_GENERATION_URL, 
-                headers={
-                    "authorization": f"Bearer {token}"
-                },
+    while True:
+        # we probably want to specify n_samples and seed in case the user wants
+        # more results but for the moment w/e
+        print("REQUESTING")
+        response = requests.post(VANA_GENERATION_URL_SYNC, 
+            headers={
+                "authorization": f"Bearer {token}"
+            },
             json={
                 "prompt": parsed_prompt,
-                "email": email,
-                # we probably want to specify n_samples and seed in case the user wants
-                # more results but for the moment w/e
-            });
-            assert response.ok, response
-            done = True
-        except: AssertionError
-    return jsonify(response.json())
+            })
+        
+        json_response = response.json()
+        if not ("success" in json_response and json_response["success"]) and json_response["statusCode"] == 500 and json_response["message"] == "Unable to run Text to Image. Please try again.":
+            continue
 
+        assert response.ok, (response, json_response)
+
+        urls = list(map(lambda url: url["url"], json_response["data"]))
+        # TODO this may never execute but the exhibit was already inserted causing integrity issues
+        cur.executemany("INSERT INTO image(imageUrl, ExhibitId) VALUES (?, ?)", zip(urls, itertools.repeat(exhibit_id)))
+        db.commit()
+
+        return jsonify(urls)
 
 @bp.post("/post")
 def create_post():
