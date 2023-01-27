@@ -94,9 +94,13 @@ def create_app(test_config=None):
 
         return render_template("user.html", email=email, posts=timeline, logged_in=logged_in(), follows=follows(email), followers=followers, following=following)
 
-    # TODO: remove this
-    @app.route("/post2")
+    @app.route("/search")
     def post2():
-        return render_template("post.html")
+        search_query = "%" + request.args.get("search", "") + "%"
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("SELECT email FROM user WHERE email LIKE ?", (search_query,))
+
+        return render_template("search.html", logged_in=logged_in(), users=list(map(lambda row: row[0], cur.fetchall())))
 
     return app
