@@ -13,7 +13,7 @@ def render_post(post):
 def render_timeline():
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT PostContent, PosterEmail, strftime('%Y-%m-%d %H:%M', PostTime, 'unixepoch') FROM post ORDER BY PostId")
+    cur.execute("SELECT PostContent, PosterEmail, strftime('%Y-%m-%d %H:%M', PostTime, 'unixepoch') FROM post ORDER BY PostTime DESC")
     timeline = list(map(render_post, cur.fetchall()))
 
     return render_template("timeline.html", posts=timeline)

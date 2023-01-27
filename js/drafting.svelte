@@ -4,7 +4,7 @@
     import { markdown } from "@codemirror/lang-markdown";
     import { autocompletion, completeFromList } from "@codemirror/autocomplete";
 
-    let parsedImages = {"@zef@mit.edu writing an essay": 0};
+    let parsedImages = {};
     const imRe = /\[\[(.*?)\]\]/g;
     const imRe2 = /\[\[(.*)\]\]/;
 
@@ -14,7 +14,7 @@
 
     const images = document.getElementById("images");
     async function getImages() {
-      setTimeout(getImages, 10000);
+      setTimeout(getImages, 60000);
       for (var key in parsedImages) {
         if (!parsedImages[key]) {
           let resp = await fetch(`/api/images?prompt=${encodeURIComponent(key)}`)
