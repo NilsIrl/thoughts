@@ -1,8 +1,15 @@
 {% extends "base.html" %}
+
+<!-- Perhaps the timeline should be publicly accessible
+    Maybe it should be converted into a shortcode that can be included
+    elsewhere
+-->
+
+{% set logged_in = True %}
+
 {% block title %}timeline{% endblock %}
 {% block body %}
 <div id="main">
-    <a href="/post">Create a post</a>
     {% for post in posts %}
     <article class="message">
         <div class="message-header has-addons">

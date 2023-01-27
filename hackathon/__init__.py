@@ -61,6 +61,13 @@ def create_app(test_config=None):
         else:
             return redirect("/")
 
+    @app.route("/disconnect")
+    def disconnect():
+        resp = redirect("/")
+        resp.delete_cookie("token")
+        return resp
+
+    # TODO: remove this
     @app.route("/post2")
     def post2():
         return render_template("post.html")

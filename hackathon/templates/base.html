@@ -11,13 +11,28 @@
         {% endblock %}
     </head>
     <body>
-        <section class="section">
-            <div class="container">
-              <h1 class="title">
-				  <a href="/">Thoughts</a>
-              </h1>
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="/">Thoughts</a>
             </div>
-          </section>
+            <div class="navbar-menu">
+                <div class="navbar-start">
+                    {% if logged_in %}
+                    <a class="navbar-item" href="/post">
+                        <!-- TODO: is "create" really the right word here? -->
+                        Create a post
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="navbar-end">
+                    {% if logged_in %}
+                    <a class="navbar-item" href="/disconnect">
+                        Disconnect
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
         {% block body %}{% endblock %}
     </body>
 </html>
