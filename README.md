@@ -2,6 +2,10 @@
 
 ## Usage
 
+Dependencies:
+
+* `cmark-gfm`
+
 ```
 npm i
 npm run build
