@@ -3,6 +3,7 @@ import os
 from flask import Flask, Blueprint, make_response, redirect, request, render_template
 import subprocess
 from hackathon.db import init_app, get_db
+from hackathon.utils import get_email, get_token, email_exists, logged_in, token_exists
 
 def render_post(post):
     post_content, author_email, post_time = post
@@ -18,16 +19,6 @@ def render_timeline():
     timeline = list(map(render_post, cur.fetchall()))
 
     return render_template("timeline.html", posts=timeline)
-
-def token_exists(token: str) -> bool:
-    db = get_db()
-    cur = db.cursor()
-    cur.execute("SELECT COUNT(*) FROM user WHERE token = ?", (token,))
-    return cur.fetchone()[0] > 0
-
-def logged_in() -> bool:
-    token = request.cookies.get("token")
-    return token != None and token_exists(token)
 
 def follows(followee: str) -> str:
     token = request.cookies.get("token")
@@ -82,7 +73,10 @@ def create_app(test_config=None):
     @app.route("/profile")
     def profile():
         if logged_in():
-            return render_template("profile.html")
+            token = request.cookies.get("token")
+            assert token != None
+            email = get_email(token)
+            return redirect(f"/users/{email}")
         else:
             return redirect("/")
 

@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request, Response
 import requests
 import re
 from hackathon.db import get_db
+from hackathon.utils import get_token, get_email, email_exists
 
 bp=Blueprint("api", __name__, url_prefix="/api")
 
@@ -23,28 +24,6 @@ class NoEmailInvalidPromptError(InvalidPromptError):
 
 class MultipleEmailInvalidPromptError(InvalidPromptError):
     pass
-
-def get_token(email: str) -> str:
-    db = get_db()
-    cur = db.cursor()
-    cur.execute("SELECT token FROM user WHERE email = ?", (email,))
-    return cur.fetchone()[0]
-
-def get_email(token: str) -> str:
-    db = get_db()
-    cur = db.cursor()
-    cur.execute("SELECT email FROM user WHERE token = ?", (token,))
-    return cur.fetchone()[0]
-
-def email_exists(email):
-    print(email)
-    db = get_db()
-    cur = db.cursor()
-
-    cur.execute("SELECT COUNT(*) FROM user WHERE email = ?", (email,))
-    count = cur.fetchone()[0]
-
-    return count >= 1
 
 # returns the prompt followed by the email of the person in question
 # parse_prompt replaces the uses of the person in the prompt
