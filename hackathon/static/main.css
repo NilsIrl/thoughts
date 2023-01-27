@@ -30,3 +30,13 @@ p {
 	background: #F7EFE5;
 	padding: 60px;
 }
+.editor-inter {
+	display: flex;
+	justify-content: space-between;
+}
+#editor-cont {
+	width: 70%;
+}
+#images {
+	width: 25%;
+}

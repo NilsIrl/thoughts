@@ -9,11 +9,11 @@
     import { defaultKeymap } from "@codemirror/commands";
     import { markdown } from "@codemirror/lang-markdown";
 
-    let parsedImages = {}
+    let parsedImages = {"@nils@nilsand.re eating a biscuit": 0}
     const imRe = /\[\[(.*?)\]\]/g;
     const imRe2 = /\[\[(.*)\]\]/;
 
-    const imagesDiv = document.getElementById("images");
+    const images = document.getElementById("images");
     async function getImages() {
       setTimeout(getImages, 10000);
       console.log(parsedImages);
@@ -25,7 +25,29 @@
             if (json.success)
             {
               parsedImages[key] = 1;
-              json.urls.forEach((url) => {                               imagesDiv.innerHTML += `<img src="${url}" />`;
+              let current = view.state.doc.toString().indexOf(key);
+              let subDiv = document.createElement("div");
+              json.urls.forEach((url) => {
+                let img = document.createElement("img");
+                img.src = url;
+                subDiv.appendChild(img);
+                img.addEventListener("click", (e) => {
+                  let pos = view.state.doc.toString().indexOf(key);
+                  let tr = view.state.update({
+                    changes: {
+                      from: pos,
+                      to: pos + key.length + 2,
+                      insert: `\n![${key}](${url})\n`,
+                    },
+                  });
+                  view.dispatch(tr);
+                  subDiv.children.forEach((otherImg) => {
+                    if (otherImg != img) {
+                        otherImg.remove();
+                    }
+                  })
+                });
+                images.appendChild(subDiv);
               })
             }
           }

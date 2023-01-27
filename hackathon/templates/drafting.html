@@ -4,14 +4,20 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='js/drafting.css') }}">
 {% endblock %}
 {% block body %}
-    <div id="main">
+    <div id="main" class="editor-inter">
 		<!-- <div id="editor"></div>
 		<div id="images"></div> -->
-		<h1 style="font-size: 30px">Create post</h1>
-		<div id="editor"></div>
-		<input type="submit" id="submit">
-		<div id="svelte"></div>
-		<div id="images"></div>
+		<div id="editor-cont">
+			<h1 style="font-size: 30px">Create post</h1>
+			<p>Use double brackets @email to generate images of you or someone else doing what you're describing. Eg @youremail running a marathon.
+			<div id="editor"></div>
+			<input type="submit" id="submit">
+			<div id="svelte"></div>
+		</div>
+		<div id="images">
+			<h1>Images</h1>
+			<a style="display: none" class="button is-loading">Loading</a>
+		</div>
 		<script src="{{ url_for('static', filename='js/drafting.js') }}"></script>
 	</div>
 {% endblock %}
