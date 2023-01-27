@@ -6,6 +6,7 @@ from hackathon.db import init_app, get_db
 
 def render_post(post):
     post_content, author_email, post_time = post
+    # TODO: sus of this str.encode
     post_content = subprocess.run(["cmark-gfm"], stdout=subprocess.PIPE, input=str.encode(post_content)).stdout.decode()
     return post_content, author_email, post_time
 
