@@ -42,7 +42,7 @@ def parse_prompt(prompt: str) -> tuple[str, str]:
         raise NoEmailInvalidPromptError() from exc
     
     final_prompt = prompt[:first_email.start(0)] + "{target_token}"
-    end_of_previous = first_email.end(0) + 1
+    end_of_previous = first_email.end(0)
 
     for email_match in email_matches:
         if email_match.group(1) != first_email:
@@ -128,7 +128,7 @@ def generate_images():
                 "authorization": f"Bearer {token}"
             },
             json={
-                "prompt": parsed_prompt,
+                "prompt": parsed_prompt.strip(),
             })
         
         json_response = response.json()
