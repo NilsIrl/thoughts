@@ -51,7 +51,6 @@ def parse_prompt(prompt: str) -> tuple[str, str]:
         end_of_previous = email_match.end(0) + 1
 
     final_prompt += prompt[end_of_previous:]
-
     return final_prompt, first_email.group(1)
 
 @bp.route('/login')

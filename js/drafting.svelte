@@ -63,7 +63,7 @@
     const timer = setInterval(() => {
             view.focus();
             if(view.hasFocus) clearInterval(timer);
-        }, 500);
+        }, 200);
     let submit = document.getElementById("submit");
     submit.addEventListener("click", async () => {
         console.log(carousels);
