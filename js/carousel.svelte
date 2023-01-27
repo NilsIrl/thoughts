@@ -1,6 +1,6 @@
 <script lang="ts">
     export let prompt;
-    export let selected_url;
+    export let selected_url = "";
     let selected = -1;
 
     let urls = fetch(`/api/images?prompt=${encodeURIComponent(prompt)}`, {
