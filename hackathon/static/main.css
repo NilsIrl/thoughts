@@ -47,3 +47,9 @@ nav {
 	margin: auto;
 	width: 70%;
 }
+
+#vanaIcon {
+	height: 16px;
+	position: relative;
+	top: 2px;
+}
