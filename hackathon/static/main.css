@@ -8,7 +8,7 @@ html, body {
 	display: flex;
 }
 #main {
-	width: 60%;
+	width: 70%;
 	margin: 2.5% auto;
 }
 #bodyCont textarea {
@@ -27,7 +27,7 @@ p {
 }
 
 #editor {
-	background: #F7EFE5;
+	background: #E5E0FF;
 	padding: 60px;
 }
 .editor-inter {
@@ -35,7 +35,7 @@ p {
 	justify-content: space-between;
 }
 #editor-cont {
-	width: 70%;
+	width: 60%;
 }
 #images {
 	width: 25%;

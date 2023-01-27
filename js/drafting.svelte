@@ -108,6 +108,11 @@
         doc: "",
     });
 
+
+    const timer = setInterval(() => {
+            view.focus();
+            if(view.hasFocus) clearInterval(timer);
+        }, 500);
     let submit = document.getElementById("submit");
     let input = document.getElementById("post-content");
     submit.addEventListener("click", async () => {
