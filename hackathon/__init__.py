@@ -3,7 +3,7 @@ import os
 from flask import Flask, Blueprint, make_response, redirect, request, render_template
 import subprocess
 from hackathon.db import init_app, get_db
-from hackathon.utils import get_email, get_token, email_exists, logged_in, token_exists
+from hackathon.utils import get_email, get_token, email_exists, logged_in, token_exists, get_email_from_nothing
 
 def render_post(post):
     post_content, author_email, post_time = post
@@ -18,7 +18,7 @@ def render_timeline():
     cur.execute("SELECT PostContent, PosterEmail, strftime('%Y-%m-%d %H:%M', PostTime, 'unixepoch') FROM post JOIN follow ON followee = PosterEmail JOIN user ON email = follower WHERE token = ? ORDER BY PostId DESC", (token,))
     timeline = list(map(render_post, cur.fetchall()))
 
-    return render_template("timeline.html", posts=timeline)
+    return render_template("timeline.html", posts=timeline, emaillog=get_email_from_nothing())
 
 def follows(followee: str) -> str:
     token = request.cookies.get("token")
@@ -60,7 +60,7 @@ def create_app(test_config=None):
     @app.route("/post")
     def drafting():
         if logged_in():
-            return render_template("drafting.html")
+            return render_template("drafting.html", emaillog=get_email_from_nothing())
         else:
             return redirect("/")
 
@@ -92,7 +92,7 @@ def create_app(test_config=None):
         cur.execute("SELECT COUNT(*) FROM follow WHERE followee = ?", (email,))
         followers = cur.fetchone()[0]
 
-        return render_template("user.html", email=email, posts=timeline, logged_in=logged_in(), follows=follows(email), followers=followers, following=following)
+        return render_template("user.html", emaillog=get_email_from_nothing(), email=email, posts=timeline, logged_in=logged_in(), follows=follows(email), followers=followers, following=following)
 
     @app.route("/search")
     def search():
@@ -101,6 +101,6 @@ def create_app(test_config=None):
         cur = db.cursor()
         cur.execute("SELECT email FROM user WHERE email LIKE ?", (search_query,))
 
-        return render_template("search.html", logged_in=logged_in(), users=list(map(lambda row: row[0], cur.fetchall())))
+        return render_template("search.html", emaillog=get_email_from_nothing(), logged_in=logged_in(), users=list(map(lambda row: row[0], cur.fetchall())))
 
     return app

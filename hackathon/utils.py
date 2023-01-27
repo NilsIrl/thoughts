@@ -13,6 +13,11 @@ def get_email(token: str) -> str:
     cur.execute("SELECT email FROM user WHERE token = ?", (token,))
     return cur.fetchone()[0]
 
+def get_email_from_nothing() -> str:
+    token = request.cookies.get("token")
+    assert token != None
+    return get_email(token)
+
 def email_exists(email):
     print(email)
     db = get_db()
