@@ -15,12 +15,13 @@
 			<p>Use double brackets @email to generate images of you or someone else doing what you're describing. Eg @youremail running a marathon.
 			<div id="editor"></div>
 			<input type="submit" id="submit">
-			<div id="svelte"></div>
 		</div>
 		<div id="images">
 			<h1>Images</h1>
 			<a style="display: none" class="button is-loading">Loading</a>
 		</div>
+
+		<div id="svelte"></div>
 		<script src="{{ url_for('static', filename='js/drafting.js') }}"></script>
 	</div>
 {% endblock %}

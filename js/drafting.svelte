@@ -4,7 +4,7 @@
     import { markdown } from "@codemirror/lang-markdown";
     import { autocompletion, completeFromList } from "@codemirror/autocomplete";
 
-    let parsedImages = { "@nils@nilsand.re eating a biscuit": 0 };
+    let parsedImages = {"@zef@mit.edu writing an essay": 0};
     const imRe = /\[\[(.*?)\]\]/g;
     const imRe2 = /\[\[(.*)\]\]/;
 
@@ -41,7 +41,16 @@
                   view.dispatch(tr);
                   let otherImgs = subDiv.children;
                   for(let i = 0; i < otherImgs.length; i++) {
-                    if (otherImgs[i] != img) {
+                    console.log(otherImgs[i].src);
+                    if (otherImgs[i].src != img.src) {
+                        otherImgs[i].remove();
+                    }
+                  }
+
+                  otherImgs = subDiv.children;
+                  for(let i = 0; i < otherImgs.length; i++) {
+                    console.log(otherImgs[i].src);
+                    if (otherImgs[i].src != img.src) {
                         otherImgs[i].remove();
                     }
                   }
