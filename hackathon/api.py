@@ -205,14 +205,20 @@ def get_users():
 
 @bp.post("/posts")
 def save_post():
+    token = request.cookies.get("token")
+    assert token != None
+
     content = request.json.get("content")
     if content == None:
         return Response(status=400)
+
+    email = get_email(token)
+
     db = get_db()
     cur = db.cursor()
-    email = get_email(request.cookies.get("token"))
     cur.execute("INSERT INTO post(PostContent, PosterEmail) VALUES (?, ?)", (content, email))
     db.commit()
+
     return Response(status=200)
 
 @bp.post("/follow/<string:email>")

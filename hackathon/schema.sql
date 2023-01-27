@@ -9,7 +9,7 @@ CREATE TABLE user (
 );
 
 CREATE TABLE exhibit (
-    exhibit_id INTEGER PRIMARY KEY,
+    exhibit_id INTEGER PRIMARY KEY DEFAULT (unixepoch()),
     prompt TEXT UNIQUE NOT NULL
 );
 
