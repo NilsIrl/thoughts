@@ -1,11 +1,15 @@
 from flask import Blueprint, jsonify, request, Response
+import openai
 import requests
 import re
 from hackathon.db import get_db
 from hackathon.utils import get_token, get_email, email_exists
 import time
 import itertools
+import os
 
+openai.api_key = os.environ.get("OPENAI_KEY")
+"p"
 bp=Blueprint("api", __name__, url_prefix="/api")
 
 VANA_LOGIN_URL = "https://api.vana.com/api/v0/auth/login"
@@ -131,8 +135,10 @@ def generate_images():
                 "prompt": parsed_prompt.strip(),
             })
         
+        print(response.status_code)
         json_response = response.json()
         if not ("success" in json_response and json_response["success"]) and json_response["statusCode"] == 500 and json_response["message"] == "Unable to run Text to Image. Please try again.":
+            print(json_response)
             continue
 
         assert response.ok, (response, json_response)
@@ -247,3 +253,32 @@ def unfollow(email):
     db.commit()
 
     return Response(status=204)
+
+
+@bp.post("/gpt")
+def gpt():
+    token = request.cookies.get("token")
+    assert token != None
+
+    email = get_email(token)
+    assert email
+    prompt = request.json.get("prompt")
+    assert prompt != None
+    prompt = f"""
+    This is a post by Nils:
+    {prompt}
+    ---
+    We need to provide captions for this post that we can feed to an image generation model.
+    Example captions:
+    - Nils walking in a park
+    - Nils as a samurai warrior
+    - Nils climbing a mountain
+
+    Generate captions that fit the post:
+    - """
+    completion = openai.Completion.create(engine="text-davinci-003", prompt=prompt, max_tokens=100)
+    print(completion)
+    completion = completion.choices[0].text
+    completion = completion.replace("Nils", "@" + email)
+    choices = [x.replace("- ", "").strip() for x in completion.split("\n")]
+    return jsonify(choices)

@@ -90,6 +90,34 @@
             submit.disabled = true;
         }
     }
+    async function genPrompt() {
+      let resp = await fetch("/api/gpt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: view.state.selection.main.empty ? view.state.doc.toString() : view.state.doc.sliceString(view.state.selection.main.from, view.state.selection.main.to),
+        }),
+      });
+      if (resp.ok)
+      {
+        let json = await resp.json();
+        let choices = "\n";
+        json.forEach((caption) => {
+          choices += `\n[[${caption}`;
+        });
+        console.log(choices);
+        view.dispatch({
+          changes: {
+            from: view.state.doc.length,
+            insert: choices,
+          },
+        });
+      }
+    }
+
+    document.getElementById("gpt").addEventListener("click", genPrompt);
 </script>
 
 <div>
