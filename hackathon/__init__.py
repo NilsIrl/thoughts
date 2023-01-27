@@ -84,7 +84,7 @@ def create_app(test_config=None):
     def show_user(email):
         db = get_db()
         cur = db.cursor()
-        cur.execute("SELECT PostContent, PosterEmail, strftime('%Y-%m-%d %H:%M', PostTime, 'unixepoch') FROM post WHERE PosterEmail = ? ORDER BY PostId", (email,))
+        cur.execute("SELECT PostContent, PosterEmail, strftime('%Y-%m-%d %H:%M', PostTime, 'unixepoch') FROM post WHERE PosterEmail = ? ORDER BY PostId DESC", (email,))
         timeline = list(map(render_post, cur.fetchall()))
 
         cur.execute("SELECT COUNT(*) FROM follow WHERE follower = ?", (email,))
