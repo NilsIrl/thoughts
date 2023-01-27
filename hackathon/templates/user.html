@@ -9,6 +9,8 @@
 <div id="main">
   <div class="is-flex is-justify-content-space-between">
     <h2 class="title is-4">{{ email }}</h2>
+    <span>{{ followers }} followers</span>
+    <span>{{ following }} following</span>
     {% if logged_in %}
       {% if follows %}
         <button id="followButton" class="button">unfollow</button>

@@ -93,7 +93,12 @@ def create_app(test_config=None):
         cur.execute("SELECT PostContent, PosterEmail, strftime('%Y-%m-%d %H:%M', PostTime, 'unixepoch') FROM post WHERE PosterEmail = ? ORDER BY PostId", (email,))
         timeline = list(map(render_post, cur.fetchall()))
 
-        return render_template("user.html", email=email, posts=timeline, logged_in=logged_in(), follows=follows(email))
+        cur.execute("SELECT COUNT(*) FROM follow WHERE follower = ?", (email,))
+        following = cur.fetchone()[0]
+        cur.execute("SELECT COUNT(*) FROM follow WHERE followee = ?", (email,))
+        followers = cur.fetchone()[0]
+
+        return render_template("user.html", email=email, posts=timeline, logged_in=logged_in(), follows=follows(email), followers=followers, following=following)
 
     # TODO: remove this
     @app.route("/post2")

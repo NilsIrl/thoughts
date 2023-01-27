@@ -1,3 +1,7 @@
+{% if posts | length == 0 %}
+<p>This place is weirdly empty :(</p>
+{% endif %}
+
 {% for post in posts %}
 <article class="message">
     <div class="message-header has-addons">
