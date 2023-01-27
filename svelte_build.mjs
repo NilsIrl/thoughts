@@ -8,5 +8,6 @@ esbuild.build({
   outdir: "hackathon/static/js",
   plugins: [sveltePlugin()],
   logLevel: "info",
+  minify: true,
 })
   .catch(() => process.exit(1))

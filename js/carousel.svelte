@@ -16,6 +16,7 @@
         />
     {:then images}
         {#each images as image_url, i}
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img on:click="{e => {selected = i; selected_url = image_url}}" class:selected={i == selected} alt="prompt generated" src={image_url} />
         {/each}
     {/await}
