@@ -14,6 +14,7 @@
 
     const images = document.getElementById("images");
     let button = document.getElementById("loading");
+    /*
     async function getImages() {
       let anyLeft = 0;
       setTimeout(getImages, 10000);
@@ -67,12 +68,14 @@
       if (!anyLeft && parsedImages.length) button.style.display = "none";
     }
     getImages();
+    */
     let lastProc = Date.now();
     const initialState = EditorState.create({
         doc: "",
         extensions: [
             minimalSetup,
             markdown(),
+            EditorView.lineWrapping,
             EditorView.updateListener.of((update) => {
                 if (update.docChanged) {
                     lastProc = Date.now();
@@ -101,8 +104,45 @@
                                     method: "POST",
                                 }
                             );
-                            if (!resp.ok) {
-                                console.log("Error fetching image");
+                            if (resp.ok) {
+                                button.style.display = "none";
+                                let json = await resp.json();
+                                console.log(json);
+                                let current = view.state.doc.toString().indexOf(genName);
+                                let subDiv = document.createElement("div");
+                                json.data.forEach((imD) => {
+                                  url = imD.url;
+                                  let img = document.createElement("img");
+                                  img.src = url;
+                                  subDiv.appendChild(img);
+                                  img.addEventListener("click", (e) => {
+                                    let pos = view.state.doc.toString().indexOf(genName) + genName.length + 2;
+                                    let insertion = `\n\n![${genName}](${url})\n`;
+                                    let tr = view.state.update({
+                                      changes: {
+                                        from: pos,
+                                        insert: insertion,
+                                      },
+                                    });
+                                    view.dispatch(tr);
+                                    let otherImgs = subDiv.children;
+                                    for(let i = 0; i < otherImgs.length; i++) {
+                                      console.log(otherImgs[i].src);
+                                      if (otherImgs[i].src != img.src) {
+                                          otherImgs[i].remove();
+                                      }
+                                    }
+
+                                    otherImgs = subDiv.children;
+                                    for(let i = 0; i < otherImgs.length; i++) {
+                                      console.log(otherImgs[i].src);
+                                      if (otherImgs[i].src != img.src) {
+                                          otherImgs[i].remove();
+                                      }
+                                    }
+                                  });
+                                  images.appendChild(subDiv);
+                                })
                             }
                         }
                     });

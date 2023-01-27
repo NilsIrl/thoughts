@@ -6,7 +6,7 @@ from hackathon.db import get_db
 bp=Blueprint("api", __name__, url_prefix="/api")
 
 VANA_LOGIN_URL = "https://api.vana.com/api/v0/auth/login"
-VANA_GENERATION_URL = "https://api.vana.com/api/v0/jobs/text-to-image"
+VANA_GENERATION_URL = "https://api.vana.com/api/v0/images/generations"
 VANA_GET_EXHIBIT_URL = "https://api.vana.com/api/v0/account/exhibits"
 
 def vana_exhibit_url_for_id(id: int) -> str:
@@ -110,6 +110,10 @@ def generate_images():
     if cur.fetchone()[0] > 0:
         return Response(status=204)
     
+    user_email = get_email(request.cookies.get("token"))
+    prompt = prompt.replace(" I ", f" @{user_email} ")
+    if prompt.startswith("I "):
+        prompt = "@" + user_email + prompt[1:]
     parsed_prompt, email = parse_prompt(prompt)
     cur.execute("INSERT INTO exhibit(prompt) VALUES (?) RETURNING exhibit_id", (prompt,))
     exhibit_id = cur.fetchone()[0]
@@ -121,21 +125,24 @@ def generate_images():
     db.commit()
 
     token = get_token(email)
-    print(token)
     # TODO URGENT: JWT could be invalid or expired
-    response = requests.post(VANA_GENERATION_URL, 
-        headers={
-            "authorization": f"Bearer {token}"
-        },
-    json={
-        "prompt": parsed_prompt,
-        "exhibit_name": f"thoughts_{exhibit_id}",
-        # we probably want to specify n_samples and seed in case the user wants
-        # more results but for the moment w/e
-    });
-    assert response.ok, response
-
-    return Response(status=204)
+    done = False
+    while not done:
+        try:
+            response = requests.post(VANA_GENERATION_URL, 
+                headers={
+                    "authorization": f"Bearer {token}"
+                },
+            json={
+                "prompt": parsed_prompt,
+                "email": email,
+                # we probably want to specify n_samples and seed in case the user wants
+                # more results but for the moment w/e
+            });
+            assert response.ok, response
+            done = True
+        except: AssertionError
+    return jsonify(response.json())
 
 
 @bp.post("/post")
