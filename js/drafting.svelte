@@ -14,7 +14,7 @@
 
     const images = document.getElementById("images");
     async function getImages() {
-      setTimeout(getImages, 60000);
+      setTimeout(getImages, 10000);
       for (var key in parsedImages) {
         if (!parsedImages[key]) {
           let resp = await fetch(`/api/images?prompt=${encodeURIComponent(key)}`)
@@ -70,7 +70,7 @@
             minimalSetup,
             markdown(),
             EditorView.updateListener.of((update) => {
-                if (update.docChanged && Date.now() - lastProc > 1000) {
+                if (update.docChanged) {
                     lastProc = Date.now();
                     let sel = update.state.selection.main.from;
                     let newCont = update.state.doc.toString(); // hacky
