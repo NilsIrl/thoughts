@@ -10,20 +10,6 @@
 {% block title %}timeline{% endblock %}
 {% block body %}
 <div id="main">
-    {% for post in posts %}
-    <article class="message">
-        <div class="message-header has-addons">
-            <div class="control">
-                {{ post[1] }}
-            </div>
-            <div class="control">
-                {{ post[2] }}
-            </div>
-        </div>
-        <div class="message-body">
-            {{ post[0] | safe }}
-        </div>
-    </article>
-    {% endfor %}
+    {% include "list_of_posts.html" %}
 </div>
 {% endblock %}

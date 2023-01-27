@@ -11,9 +11,10 @@ def render_post(post):
     return post_content, author_email, post_time
 
 def render_timeline():
+    token = request.cookies.get("token")
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT PostContent, PosterEmail, strftime('%Y-%m-%d %H:%M', PostTime, 'unixepoch') FROM post ORDER BY PostTime DESC")
+    cur.execute("SELECT PostContent, PosterEmail, strftime('%Y-%m-%d %H:%M', PostTime, 'unixepoch') FROM post JOIN follow ON followee = PosterEmail JOIN user ON email = follower WHERE token = ? ORDER BY PostId DESC", (token,))
     timeline = list(map(render_post, cur.fetchall()))
 
     return render_template("timeline.html", posts=timeline)
@@ -23,6 +24,17 @@ def token_exists(token: str) -> bool:
     cur = db.cursor()
     cur.execute("SELECT COUNT(*) FROM user WHERE token = ?", (token,))
     return cur.fetchone()[0] > 0
+
+def logged_in() -> bool:
+    token = request.cookies.get("token")
+    return token != None and token_exists(token)
+
+def follows(followee: str) -> str:
+    token = request.cookies.get("token")
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT COUNT(*) FROM follow JOIN user ON email = follower WHERE token = ? AND followee = ?", (token, followee))
+    return cur.fetchone()[0] >= 1
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -56,8 +68,7 @@ def create_app(test_config=None):
 
     @app.route("/post")
     def drafting():
-        token = request.cookies.get('token')
-        if token != None and token_exists(token):
+        if logged_in():
             return render_template("drafting.html")
         else:
             return redirect("/")
@@ -67,6 +78,22 @@ def create_app(test_config=None):
         resp = redirect("/")
         resp.delete_cookie("token")
         return resp
+
+    @app.route("/profile")
+    def profile():
+        if logged_in():
+            return render_template("profile.html")
+        else:
+            return redirect("/")
+
+    @app.route("/users/<string:email>")
+    def show_user(email):
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("SELECT PostContent, PosterEmail, strftime('%Y-%m-%d %H:%M', PostTime, 'unixepoch') FROM post WHERE PosterEmail = ? ORDER BY PostId", (email,))
+        timeline = list(map(render_post, cur.fetchall()))
+
+        return render_template("user.html", email=email, posts=timeline, logged_in=logged_in(), follows=follows(email))
 
     # TODO: remove this
     @app.route("/post2")

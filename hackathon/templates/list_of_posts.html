@@ -1,0 +1,15 @@
+{% for post in posts %}
+<article class="message">
+    <div class="message-header has-addons">
+        <div class="control">
+            <a href="/users/{{ post[1] }}">{{ post[1] }}</a>
+        </div>
+        <div class="control">
+            {{ post[2] }}
+        </div>
+    </div>
+    <div class="message-body">
+        {{ post[0] | safe }}
+    </div>
+</article>
+{% endfor %}

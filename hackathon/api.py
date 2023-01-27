@@ -214,3 +214,24 @@ def save_post():
     cur.execute("INSERT INTO post(PostContent, PosterEmail) VALUES (?, ?)", (content, email))
     db.commit()
     return Response(status=200)
+
+@bp.post("/follow/<string:email>")
+def follow(email):
+    token = request.cookies.get("token")
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("INSERT INTO follow(follower, followee) VALUES (?, ?)", (get_email(token), email))
+    db.commit()
+
+    return Response(status=204)
+
+@bp.post("/unfollow/<string:email>")
+def unfollow(email):
+    token = request.cookies.get("token")
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("DELETE FROM follow WHERE follower = ? AND followee = ?", (get_email(token), email))
+    db.commit()
+
+    return Response(status=204)

@@ -1,21 +1,51 @@
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ title }}</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-    <link type="text/css" href="https://cdn.jsdelivr.net/water.css@2/out/water.min.css" />
-</head>
+{% extends "base.html" %}
 
-<body>
-    <div id="main">
-      <h2>{{ user_name }}</h2>
-      <ul>
-        {% for post in posts %}
-        <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
-      </ul>
-    </div>
-</body>
-</html>
+{% block title %}
+{{ email }}
+{% endblock %}
+
+{% block body %}
+<div id="main">
+  <div class="is-flex is-justify-content-space-between">
+    <h2 class="title is-4">{{ email }}</h2>
+    {% if logged_in %}
+      {% if follows %}
+        <button id="followButton" class="button">unfollow</button>
+      {% else %}
+        <button id="followButton" class="button is-info">follow</button>
+      {% endif %}
+    {% else %}
+      <button class="button" disabled>follow</button>
+    {% endif %}
+  </div>
+  {% include "list_of_posts.html" %}
+</div>
+<script>
+  const followButton = document.getElementById("followButton");
+  const email = "{{ email }}";
+  followButton.addEventListener('click', async e => {
+    if (followButton.textContent == "follow") {
+      followButton.disabled = true;
+      followButton.classList.add("is-loading");
+
+      await fetch("/api/follow/" + encodeURIComponent(email), { method: "POST" });
+
+      followButton.disabled = false;
+      followButton.classList.remove("is-loading");
+      followButton.classList.remove("is-info");
+      followButton.textContent = "unfollow";
+    } else {
+      followButton.disabled = true;
+      followButton.classList.add("is-loading");
+
+      await fetch("/api/unfollow/" + encodeURIComponent(email), { method: "POST" });
+
+      followButton.disabled = false;
+      followButton.classList.remove("is-loading");
+      followButton.classList.add("is-info");
+      followButton.textContent = "follow";
+    }
+  });
+</script>
+{% endblock %}

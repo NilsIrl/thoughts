@@ -22,6 +22,10 @@ flask --app hackathon --debug run
 
 * [ ] normalise the prompts (to prevent generating the same prompt twice basically) This could be done by using the tokenizer used by stable diffusion like that it's only when it's literally exactly the same thing (although we don't know how vana does its tokenizing especially with the {target_token} thing)o
 
+### Visual
+
+* [ ] There is no space between the 2 input fields for logging in.
+
 ## feedback to Vana
 
 * There is clearly a security issue with your codes
