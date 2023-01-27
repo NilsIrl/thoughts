@@ -92,7 +92,12 @@ def create_app(test_config=None):
         cur.execute("SELECT COUNT(*) FROM follow WHERE followee = ?", (email,))
         followers = cur.fetchone()[0]
 
-        return render_template("user.html", emaillog=get_email_from_nothing(), email=email, posts=timeline, logged_in=logged_in(), follows=follows(email), followers=followers, following=following)
+        if logged_in():
+            emaillog = get_email_from_nothing()
+        else:
+            emaillog = "not logged in"
+
+        return render_template("user.html", emaillog=emaillog, email=email, posts=timeline, logged_in=logged_in(), follows=follows(email), followers=followers, following=following)
 
     @app.route("/search")
     def search():
