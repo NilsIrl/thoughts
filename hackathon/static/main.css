@@ -9,7 +9,7 @@ html, body {
 }
 #main {
 	width: 60%;
-	margin: 5% auto;
+	margin: 2.5% auto;
 }
 #bodyCont textarea {
 	width: 100%;
@@ -39,4 +39,11 @@ p {
 }
 #images {
 	width: 25%;
+}
+h1 {
+	font-size: 30px;
+}
+nav {
+	margin: auto;
+	width: 70%;
 }

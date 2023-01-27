@@ -8,8 +8,8 @@
     <div id="landing">
         <h1>Welcome to 'thoughts'</h1>
         <p>A place for you to gather on your day and see what your friends are up to through text updates with auto-generated captions and animated characters.</p>
-        <p>Login with your <a href="https://vana.com" target="_blank">Vana</a> account:</p>
-        
+		<p>Login with your <a href="https://vana.com" target="_blank">Vana</a> account:</p>
+		<br>
         <form id="submitEmail">
             <div class="control">
                 <input class="input" type="email" id="email" placeholder="Email">
@@ -22,6 +22,11 @@
         </form>
         <div id="infobox" class="notification is-danger" hidden>
         </div>
+
+		<div style="text-align: center">
+			<img width="150" style="display: block; margin: 30px auto" src="{{ url_for('static', filename='header.png') }}" alt="landing image">
+			<p style="display: block; margin: auto">It's time to dream.</p>
+		</div>
     </div>
 </div>
 
