@@ -17,6 +17,9 @@ flask --app hackathon --debug run
 * [ ] Make it possible to use "I" instead of @ your own email address
 * [ ] Decide whether we want people to follow each other, or be friends with each other, .... (pros of following is that it allows to have granularity where a person can generate stuff about another person when the other can't and then like that we can have private account like on instagram where people can "request" to follow)
 * [ ] Consider using basicSetup instead of minimalSetup but without line numbers to benefit from more features
+* [ ] Test synchroneous API
+* [ ] Prompt enhancement
+* [ ] We should probably enable line wrapping on the editor
 
 ### "performance"
 
@@ -25,6 +28,7 @@ flask --app hackathon --debug run
 ### Visual
 
 * [ ] There is no space between the 2 input fields for logging in.
+* [ ] Change font for text editor
 
 ## feedback to Vana
 
