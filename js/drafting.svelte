@@ -13,7 +13,9 @@
         .then((json_response) => json_response.map((email) => "@" + email));
 
     const images = document.getElementById("images");
+    let button = document.getElementById("loading");
     async function getImages() {
+      let anyLeft = 0;
       setTimeout(getImages, 10000);
       for (var key in parsedImages) {
         if (!parsedImages[key]) {
@@ -60,7 +62,9 @@
             }
           }
         }
+        else anyLeft = 1;
       }
+      if (!anyLeft && parsedImages.length) button.style.display = "none";
     }
     getImages();
     let lastProc = Date.now();
@@ -87,6 +91,7 @@
                     generations.forEach(async (gen) => {
                         let genName = gen.slice(2, -2);
                         if (!(genName in parsedImages)) {
+                            button.style.display = "block";
                             parsedImages[genName] = 0;
                             let resp = await fetch(
                                 `/api/images?prompt=${encodeURIComponent(
@@ -116,6 +121,7 @@
         parent: document.getElementById("editor"),
         state: initialState,
         doc: "",
+        lineWrapping: true
     });
 
     let submit = document.getElementById("submit");
