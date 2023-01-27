@@ -12,7 +12,7 @@ VANA_GET_EXHIBIT_URL = "https://api.vana.com/api/v0/account/exhibits"
 def vana_exhibit_url_for_id(id: int) -> str:
     return f"{VANA_GET_EXHIBIT_URL}/thoughts_{id}"
 
-EMAIL_PATTERN = re.compile(r"@(\w+@\w+.\w+)")
+EMAIL_PATTERN = re.compile(r"@(\w+@\w+\.\w+)")
 
 # Abstract class (TM)
 class InvalidPromptError(Exception):
