@@ -8,22 +8,16 @@
 {% endblock %}
 {% block body %}
     <div id="main" class="editor-inter">
-		<!-- <div id="editor"></div>
-		<div id="images"></div> -->
 		<div id="editor-cont">
 			<h1 style="font-size: 30px">Create post</h1>
 			<p>Use the following syntax to generate images of you or someone else doing what you're describing: <code>[[@email doing X]]</code>. All markdown features are supported. You can specify a type of style and also animate your friends.
 			<br><br>
 			<div id="editor"></div>
-			<br>
-			<input type="submit" id="submit" class="button" value="Submit post">
-		</div>
-		<div id="images">
-			<h1>Images</h1>
-			<span style="display: none !important; margin: 30px auto; display: block; width: 50px; height: 50px;" id="loading" class="loader"></span>
+            <br>
+			<button id="submit" class="button">Create post</button>
 		</div>
 
-		<div id="svelte"></div>
+		<div id="svelte-images"></div>
 		<script src="{{ url_for('static', filename='js/drafting.js') }}"></script>
 	</div>
 {% endblock %}

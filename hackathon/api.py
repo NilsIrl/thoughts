@@ -123,7 +123,7 @@ def generate_images():
     while True:
         # we probably want to specify n_samples and seed in case the user wants
         # more results but for the moment w/e
-        print("REQUESTING")
+        print("REQUESTING", parsed_prompt)
         response = requests.post(VANA_GENERATION_URL_SYNC, 
             headers={
                 "authorization": f"Bearer {token}"

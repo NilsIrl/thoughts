@@ -4,9 +4,13 @@
     import { markdown } from "@codemirror/lang-markdown";
     import { autocompletion, completeFromList } from "@codemirror/autocomplete";
 
+    import Carousel from "./carousel.svelte";
+    import { element } from "svelte/internal";
+
+    let carousels = [];
+
     let parsedImages = {};
     const imRe = /\[\[(.*?)\]\]/g;
-    const imRe2 = /\[\[(.*)\]\]/;
 
     let all_users = fetch(`/api/users`)
         .then((response) => response.json())
@@ -37,60 +41,7 @@
                     }
                     let generations = newCont.match(imRe);
                     if (!generations) return;
-                    generations.forEach(async (gen) => {
-                        let genName = gen.slice(2, -2);
-                        if (!(genName in parsedImages)) {
-                            button.style.display = "block";
-                            parsedImages[genName] = 0;
-                            let resp = await fetch(
-                                `/api/images?prompt=${encodeURIComponent(
-                                    genName
-                                )}`,
-                                {
-                                    method: "POST",
-                                }
-                            );
-                            if (resp.ok) {
-                                button.style.display = "none";
-                                let json = await resp.json();
-                                console.log(json);
-                                let current = view.state.doc.toString().indexOf(genName);
-                                let subDiv = document.createElement("div");
-                                json.forEach((url) => {
-                                  let img = document.createElement("img");
-                                  img.src = url;
-                                  subDiv.appendChild(img);
-                                  img.addEventListener("click", (e) => {
-                                    let pos = view.state.doc.toString().indexOf(genName) + genName.length + 2;
-                                    let insertion = `\n\n![${genName}](${url})\n`;
-                                    let tr = view.state.update({
-                                      changes: {
-                                        from: pos,
-                                        insert: insertion,
-                                      },
-                                    });
-                                    view.dispatch(tr);
-                                    let otherImgs = subDiv.children;
-                                    for(let i = 0; i < otherImgs.length; i++) {
-                                      console.log(otherImgs[i].src);
-                                      if (otherImgs[i].src != img.src) {
-                                          otherImgs[i].remove();
-                                      }
-                                    }
-
-                                    otherImgs = subDiv.children;
-                                    for(let i = 0; i < otherImgs.length; i++) {
-                                      console.log(otherImgs[i].src);
-                                      if (otherImgs[i].src != img.src) {
-                                          otherImgs[i].remove();
-                                      }
-                                    }
-                                  });
-                                  images.appendChild(subDiv);
-                                })
-                            }
-                        }
-                    });
+                    carousels = generations.map((gen) => ({prompt: gen.slice(2, -2), selected_url: ''}));
                 }
             }),
             autocompletion({
@@ -114,16 +65,18 @@
             if(view.hasFocus) clearInterval(timer);
         }, 500);
     let submit = document.getElementById("submit");
-    let input = document.getElementById("post-content");
     submit.addEventListener("click", async () => {
-        let cmv = view.state.doc.toString();
+        console.log(carousels);
+        let doc = view.state.doc.toString();
+        let generations = doc.replace(imRe, (match) => `![](${carousels.find(element => element.prompt == match.slice(2, -2)).selected_url})`);
+
         let resp = await fetch("/api/posts", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                content: cmv,
+                content: generations,
             }),
         });
         if (resp.ok) {
@@ -131,3 +84,16 @@
         }
     });
 </script>
+
+<div>
+    {#each carousels as carousel}
+        <Carousel bind:selected_url={carousel.selected_url} prompt={carousel.prompt} />
+    {/each}
+</div>
+
+<style>
+    div {
+        display: flex;
+        flex-direction: column;
+    }
+</style>

@@ -8,7 +8,7 @@ html, body {
 	display: flex;
 }
 #main {
-	width: 70%;
+	width: 80%;
 	margin: 2.5% auto;
 }
 #bodyCont textarea {
@@ -37,8 +37,8 @@ p {
 #editor-cont {
 	width: 60%;
 }
-#images {
-	width: 25%;
+#svelte-images {
+	width: 40%;
 }
 h1 {
 	font-size: 30px;
