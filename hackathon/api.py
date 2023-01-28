@@ -146,11 +146,18 @@ def generate_images():
         
         print(response.status_code)
         json_response = response.json()
+
+        if not response.ok and ("message" not in json_response or json_response["message"] != "Unable to run Text to Image. Please try again."):
+            print("response not ok", response, json_response)
+            cur.execute("DELETE FROM exhibit WHERE exhibit_id = ?", (exhibit_id,))
+            db.commit()
+            return jsonify({
+                "error": json_response["message"],
+                })
+
         if not ("success" in json_response and json_response["success"]) and json_response["statusCode"] == 500 and json_response["message"] == "Unable to run Text to Image. Please try again.":
             print(json_response)
             continue
-
-        assert response.ok, (response, json_response)
 
         urls = list(map(lambda url: url["url"], json_response["data"]))
         # TODO this may never execute but the exhibit was already inserted causing integrity issues
