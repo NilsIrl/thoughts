@@ -121,7 +121,7 @@
 </script>
 
 <div>
-    {#each carousels as carousel, i }
+    {#each carousels as carousel, i (carousel) }
         <Carousel bind:selected_url={selected_urls[i]} prompt={carousel} />
     {/each}
 </div>

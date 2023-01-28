@@ -115,7 +115,16 @@ def generate_images():
 
     # TODO: concurrency, an exhibit could have been introduced here
 
-    parsed_prompt, email = parse_prompt(prompt)
+    try:
+        parsed_prompt, email = parse_prompt(prompt)
+    except NoEmailInvalidPromptError:
+        return jsonify({
+            "error": "You need to @ someone in your prompt",
+        })
+    except MultipleEmailInvalidPromptError:
+        return jsonify({
+            "error": "You cannot @ multiple different people in your prompt",
+        })
     cur.execute("INSERT INTO exhibit(prompt) VALUES (?) RETURNING exhibit_id", (prompt,))
     exhibit_id = cur.fetchone()[0]
     db.commit()
