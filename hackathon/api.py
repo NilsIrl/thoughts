@@ -44,15 +44,15 @@ def parse_prompt(prompt: str) -> tuple[str, str]:
         first_email = next(email_matches)
     except StopIteration as exc:
         raise NoEmailInvalidPromptError() from exc
-    
+
     final_prompt = prompt[:first_email.start(0)] + "{target_token}"
     end_of_previous = first_email.end(0)
 
     for email_match in email_matches:
-        if email_match.group(1) != first_email:
+        if email_match.group(1) != first_email.group(1):
             raise MultipleEmailInvalidPromptError()
         final_prompt += prompt[end_of_previous:email_match.start(0)] + "{target_token}"
-        end_of_previous = email_match.end(0) + 1
+        end_of_previous = email_match.end(0)
 
     final_prompt += prompt[end_of_previous:]
     return final_prompt, first_email.group(1)
