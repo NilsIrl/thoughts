@@ -40,6 +40,7 @@
                     for (let i = selected_urls.length; i < carousels.length; ++i) {
                         selected_urls.push("");
                     }
+                    selected_urls = selected_urls.slice(0, generations.length);
                 }
             }),
             autocompletion({
