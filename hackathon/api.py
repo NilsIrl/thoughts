@@ -151,6 +151,10 @@ def generate_images():
             print("response not ok", response, json_response)
             cur.execute("DELETE FROM exhibit WHERE exhibit_id = ?", (exhibit_id,))
             db.commit()
+            if json_response["message"] == "Provided JWT was invalid or expired":
+                return jsonify({
+                    "error": "Please ask your friend to log in again, as his credentials are now expired"
+                    })
             return jsonify({
                 "error": json_response["message"],
                 })
